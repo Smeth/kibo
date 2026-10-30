@@ -1,0 +1,43 @@
+name: Fonctionnalité KIBO
+description: Proposer ou planifier une fonctionnalité
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Besoin utilisateur
+      description: Quel problème ou besoin cette fonctionnalité résout-elle ?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Résultat attendu
+      description: Décrire le comportement observable attendu.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      description: Lister les conditions vérifiables de réussite.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Domaine
+      options:
+        - Flutter UI
+        - Authentification
+        - Annonces
+        - Recherche
+        - Favoris
+        - Messagerie
+        - Notifications
+        - Modération
+        - Supabase / sécurité
+        - Documentation / outillage
+    validations:
+      required: true
