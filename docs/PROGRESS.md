@@ -43,8 +43,51 @@ Dernière mise à jour : 2026-10-30
 - Le SHA du commit de clôture documentaire et le résultat de son push sont fournis dans le compte rendu de session.
 
 ## KIBO-002 — Connexion Supabase
-- **Statut : définie, pas encore exécutée.** Issue : https://github.com/Smeth/kibo/issues/2.
+- **Statut : implémentée, 13 tests et compilation APK ARM64 validés après réparation de l’environnement Android.** Issue : https://github.com/Smeth/kibo/issues/2. KIBO-002 reste la tâche courante pour la validation avec le projet Supabase réel ; aucune fonctionnalité métier suivante n’est commencée.
 - Périmètre : ajouter le SDK Supabase compatible, initialiser le client de façon centralisée et testable, injecter URL + clé anon/publishable via paramètres de build, gérer proprement la configuration absente/invalide et documenter le lancement PowerShell.
 - Hors périmètre : schéma SQL, migrations, RLS, authentification, Storage et fonctionnalités métier.
 - Garde-fou : jamais de clé `service_role` dans Flutter ; aucune vraie clé ne doit être écrite dans les fichiers du dépôt.
-- La tâche est décrite dans [NEXT_TASK.md](NEXT_TASK.md) et doit être exécutée sur `main` après vérification de l’état Git.
+- État initial propre sur `main`, mise à jour en fast-forward depuis `origin/main` avant modification ; aucun projet recréé ni travail local écrasé.
+- SDK résolu : `supabase_flutter 2.18.3`, `supabase 2.16.5`, versions verrouillées dans `pubspec.lock`. Le graphe résolu exige Flutter >= 3.38.1, compatible avec Flutter 3.38.5 / Dart 3.10.4.
+- `SupabaseConfig` lit les paramètres de build et valide URL HTTPS et format public de clé. Un `SupabaseService` unique, injecté dans l’application, partage son Future d’initialisation et expose le client uniquement après réussite.
+- Écrans de chargement et d’erreur explicite ajoutés au démarrage, sans refonte de l’accueil. Les exceptions SDK sont remplacées par un message générique ; aucune valeur de configuration n’est journalisée par notre code et les logs debug SDK sont désactivés.
+- Persistance/restauration de session, rafraîchissement des jetons et traitement des liens d’authentification désactivés pour cette étape. Aucun parcours d’authentification ni accès métier ajouté.
+- Permission Internet ajoutée au manifeste Android principal. iOS inspecté, sans exception ATS ni callback OAuth ajouté. Registrants desktop régénérés par Flutter pour les dépendances du SDK.
+- Commandes PowerShell et limites documentées dans [SUPABASE_SETUP.md](SUPABASE_SETUP.md) ; README, architecture et décisions techniques actualisés.
+
+### Vérifications KIBO-002 — 2026-10-30
+- `flutter pub get` : réussi, ainsi que le passage diagnostique `flutter pub get --verbose` (journal local ignoré sous `.dart_tool/`), après interruption d’un téléchargement sans sortie prolongé.
+- `dart format --output=none --set-exit-if-changed lib test` : 7 fichiers, 0 changement.
+- `flutter analyze --fatal-infos` : aucun problème.
+- `flutter test` : 13 tests réussis (configuration absente/incomplète/invalide, formats publics et refus des rôles privilégiés, initialisation unique/concurrente, accès au client, erreurs SDK masquées et parcours de démarrage).
+- Le premier passage des widgets a été interrompu lors de l’attente de fermeture de l’isolate d’un vrai client SDK. Le double de test a été remplacé par un faux client sans isolate ni réseau ; la suite complète réussit désormais.
+- Aucun paramètre réel utilisé ; les exemples et tests contiennent uniquement des données fictives.
+- `flutter build apk --debug` : tentative multiarchitecture bloquée par des erreurs de négociation TLS pendant le téléchargement des moteurs Flutter ARMv7 et x86_64 depuis Google Storage ; retry automatique interrompu. Aucun contrôle TLS désactivé. Ce résultat est distinct des 13 tests réussis.
+- `flutter build apk --debug --target-platform android-arm64` : tentative interrompue pendant l’attente réseau, puis vérification Gradle hors ligne avec le JDK Android Studio.
+- Depuis `android/`, `gradlew.bat --offline '-Ptarget-platform=android-arm64' '-Ptarget=<chemin-absolu-vers-lib/main.dart>' '-Pbase-application-name=android.app.Application' assembleDebug` : compilation Flutter/Dart et Java/Kotlin réussie, mais assemblage complet en échec sur `:app_links:extractDebugAnnotations`. Dépendances absentes du cache : `com.android.tools.external.com-intellij:intellij-core:31.11.1` et `com.android.tools.external.com-intellij:kotlin-compiler:31.11.1`.
+- Au premier diagnostic, Gradle signalait aussi `cmdline-tools/latest/package.xml` corrompu dans le SDK Android local et une installation `latest-2` à un emplacement incohérent. Aucune réparation du SDK global n’avait encore été effectuée à ce stade.
+- Les changements ont été préservés dans l’index sans commit ni push pendant ce blocage. Le propriétaire a ensuite autorisé sa résolution ; les résultats finaux ci-dessous remplacent ces échecs initiaux.
+
+### Réparation Android et validations finales — 2026-10-30
+- Capture et comparaison de l’index avant/après réparation et contrôles : les 21 fichiers préparés étaient intégralement identiques. Seuls ce document et `NEXT_TASK.md` sont ensuite actualisés pour le compte rendu. Aucun reset, clean destructif, effacement de changement ni force-push.
+- Diagnostic avant réparation : `cmdline-tools/latest/package.xml` faisait 18 496 octets, tous nuls. SHA-256 : `E5585BE8A71910C1AA8A20F236E36C515A33FF49A8836B45FB4FAD6F230ECCD9`. Le dossier `latest-2` contenait un XML valide pour le même package `cmdline-tools;latest`, révision 19, au mauvais emplacement. La cause de l’écrasement initial du XML n’est pas déterminée.
+- Sauvegarde réversible des deux dossiers complets hors du SDK : `C:\Users\MONSTER\AppData\Local\Android\KIBO-sdk-backups\20261030-225320`. Aucun dossier sauvegardé n’a été supprimé.
+- Réinstallation ciblée via le `sdkmanager` officiel sauvegardé, avec `--sdk_root` explicite, `--install "cmdline-tools;latest" --channel=0`. Outils stables officiels réinstallés : révision 23.0. Le passage 19 -> 23 concerne uniquement l’outillage SDK défectueux réinstallé via le package stable `latest`, pas les dépendances de KIBO. Nouveau XML valide, 18 407 octets, chemin et révision cohérents.
+- Le premier lancement officiel de `sdkmanager` 23 a installé son remplaçant Android CLI. Inventaire SDK réussi ; plus d’avertissement de XML corrompu ni d’emplacement incohérent. L’avertissement de dépréciation de `sdkmanager` est attendu avec cette version.
+- HTTPS vérifié avec Java/JBR sur les endpoints officiels Google Repository, Google Maven et Flutter Storage : réponses HTTP 200 avec les contrôles de certificat et de nom d’hôte standards. Les anciennes erreurs TLS ne se reproduisent plus ; aucune cause réseau définitive n’est affirmée. Aucun certificat ajouté, proxy configuré ou contrôle SSL/TLS désactivé.
+- Gradle a résolu les deux JAR exacts manquants depuis Google Maven uniquement, dans un diagnostic isolé sous `.dart_tool/` ignoré par Git : `intellij-core:31.11.1` (37 724 225 octets) et `kotlin-compiler:31.11.1` (50 332 514 octets), commande terminée avec `BUILD SUCCESSFUL`. Aucune modification des versions de `pubspec.yaml`/`pubspec.lock`, du wrapper Gradle, d’AGP, du NDK ou des plateformes Android pendant la réparation.
+- `flutter pub get` : réussi après réparation.
+- `dart format lib test`, puis `dart format --output=none --set-exit-if-changed lib test` : 7 fichiers, 0 changement.
+- `flutter analyze --fatal-infos` : aucun problème.
+- `flutter test` : 13 tests réussis.
+- `flutter build apk --debug --target-platform android-arm64` : réussi, code de sortie 0 ; assemblage Gradle en 16,1 secondes, sans paramètre Supabase réel. APK local : `build/app/outputs/flutter-apk/app-debug.apk`, 110 695 037 octets ; présence de `lib/arm64-v8a/libflutter.so` vérifiée.
+- `git diff --check`, `git diff --cached --check` et revue intégrale du diff : réalisés ; aucun fichier de diagnostic, cache, SDK, clé réelle ou secret privilégié sélectionné pour publication.
+- Références officielles : [sdkmanager](https://developer.android.com/tools/sdkmanager), [Android CLI](https://developer.android.com/tools/agents/android-cli). Journaux et scripts de diagnostic locaux conservés sous `.dart_tool/`, hors Git.
+
+### Limites KIBO-002
+- Initialisation testée avec un initialiseur injecté ; pas de connexion avec les paramètres du projet réel, pas de vérification de clé côté serveur ni de joignabilité. L’initialisation du SDK ne constitue pas une sonde réseau.
+- La validation de format et de rôle du JWT n’est pas une vérification cryptographique. RLS et grants côté serveur restent indispensables avant d’exposer des données ; aucune policy n’est créée ou désactivée ici.
+- APK debug ARM64 validé ; compilation multiarchitecture non relancée, APK release et lancement sur téléphone non vérifiés dans cette reprise. Aucun contournement de tâche Gradle ni affaiblissement TLS.
+- Pas de compilation iOS/desktop ni de validation sur ces plateformes. Pas de livraison production validée.
+- Aucun secret ou clé réelle ajouté ; les chaînes de tests qui évoquent un rôle privilégié servent uniquement au rejet de données fictives.
+- Le SHA, la confirmation de publication sur `main` et le résultat de la CI sont fournis dans le compte rendu de session. Les validations locales ci-dessus ne constituent pas à elles seules une preuve d’exécution de GitHub Actions ni de connexion au projet Supabase réel.

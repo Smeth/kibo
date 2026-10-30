@@ -5,7 +5,7 @@
 KIBO est une marketplace congolaise de produits et services. Le lancement initial cible Brazzaville, avec une extension prévue vers Pointe-Noire et d'autres villes.
 
 ## État du projet
-Le projet Flutter existant et son premier accueil KIBO sont versionnés sur `main` selon le workflow Direct Main. L’accueil utilise des données de démonstration ; Supabase n’est pas encore connecté. Voir [l'avancement](docs/PROGRESS.md) et la [prochaine tâche](docs/NEXT_TASK.md).
+Le projet Flutter existant et son premier accueil KIBO sont versionnés sur `main` selon le workflow Direct Main. L’accueil utilise des données de démonstration. L’initialisation Supabase est centralisée ; les paramètres publics sont fournis au build, sans clé dans le dépôt. Voir [l'avancement](docs/PROGRESS.md) et la [prochaine tâche](docs/NEXT_TASK.md).
 
 ## Lancement local
 Socle vérifié avec Flutter 3.38.5 / Dart 3.10.4.
@@ -15,6 +15,8 @@ flutter pub get
 flutter devices
 flutter run -d <identifiant-appareil>
 ```
+
+Sans paramètres Supabase, l’application affiche « Configuration KIBO » et n’initialise pas le SDK. Pour accéder à l’accueil, suivre la [configuration PowerShell Supabase](docs/SUPABASE_SETUP.md).
 
 Avant chaque commit et push :
 

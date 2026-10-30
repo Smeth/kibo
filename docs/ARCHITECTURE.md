@@ -50,3 +50,11 @@ Le schéma SQL définitif doit être conçu sous forme de migrations versionnée
 
 ## Configuration
 Les URL et clés publiques nécessaires au client peuvent être configurées par environnement. Les secrets privilégiés restent côté serveur. Ne jamais commiter de secrets réels.
+
+### Socle Supabase Flutter — 2026-10-30
+
+- `lib/core/config/supabase_config.dart` : lecture des deux paramètres de build, validation HTTPS et format de clé publique, sans valeur réelle par défaut.
+- `lib/core/supabase/supabase_service.dart` : accès client centralisé injectable ; un seul Future d’initialisation par service. Aucun accès avant réussite, erreurs publiques génériques sans logs de valeurs.
+- `main` crée un service unique injecté dans `KiboApp` ; le démarrage affiche chargement, erreur de configuration ou accueil existant.
+- Les tests remplacent l’initialiseur SDK, sans réseau ; aucun repository, schéma ou parcours d’authentification ajouté.
+- Voir [SUPABASE_SETUP.md](SUPABASE_SETUP.md) pour PowerShell, limites de validation et garde-fous.

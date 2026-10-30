@@ -17,7 +17,17 @@ Commit de clôture documentaire communiqué : [7f9782d55abb84879896bf42d512ff2cf
 Le propriétaire a choisi Direct Main le 2026-10-30. Pour les tâches courantes : travailler sur `main`, préserver les modifications locales, tester avant commit et push, ne jamais faire de force-push. En cas de diff inattendu ou de test échoué, ne pas pousser.
 
 ## KIBO-002 — Préparer et vérifier la connexion Supabase dans Flutter
-<badge color="info">À exécuter par Codex</badge>
+**Statut : implémentée ; contrôles locaux et compilation APK ARM64 réussis. À conserver comme tâche courante pour validation avec le projet Supabase réel.**
+
+Configuration, service injectable, gestion du démarrage, tests isolés et guide PowerShell réalisés. Les contrôles locaux et limites sont consignés dans [PROGRESS.md](PROGRESS.md). Aucune clé réelle n’a été utilisée. Le lancement avec les paramètres publics du projet réel et la validation distante restent à effectuer localement, sans copier de clé dans GitHub. Ne pas démarrer une autre fonctionnalité métier au titre de cette tâche.
+
+### Blocage Android résolu le 2026-10-30
+Le propriétaire a autorisé le diagnostic et la réparation de l’environnement. Le XML corrompu contenait uniquement des octets nuls. Les deux anciens dossiers d’outils ont été sauvegardés hors du SDK avant réinstallation officielle des Command-line Tools stables. L’inventaire SDK est désormais cohérent. Les deux JAR manquants ont été résolus par Gradle depuis Google Maven ; les téléchargements ont réussi avec TLS standard, sans désactiver SSL ni modifier les dépendances applicatives.
+
+Les 21 fichiers préparés ont été préservés pendant la réparation ; seuls les comptes rendus sont ensuite actualisés. `flutter pub get`, formatage (7 fichiers inchangés), `flutter analyze --fatal-infos`, `flutter test` (13 tests), compilation APK debug ARM64 et contrôles Git réussis. Voir les preuves et limites dans [PROGRESS.md](PROGRESS.md). Le SHA et le résultat du push figurent dans le compte rendu de session.
+
+### Validation restante
+Lancer localement avec les paramètres publics du projet réel selon [SUPABASE_SETUP.md](SUPABASE_SETUP.md), sans écrire les valeurs dans Git ni dans les logs. Aucun test de joignabilité ni d’acceptation d’une clé réelle n’a été effectué. Ne pas déclarer la connexion distante ou la préparation production validée, ni commencer une fonctionnalité métier supplémentaire.
 
 Issue : https://github.com/Smeth/kibo/issues/2
 

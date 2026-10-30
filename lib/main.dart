@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'core/config/supabase_config.dart';
+import 'core/supabase/supabase_service.dart';
+
 const Color kiboGreen = Color(0xFF087F5B);
 const Color kiboDark = Color(0xFF075B45);
 const Color kiboBackground = Color(0xFFF7F9F7);
@@ -8,11 +11,18 @@ const Color kiboSecondary = Color(0xFF66736C);
 const Color kiboBorder = Color(0xFFE5ECE7);
 
 void main() {
-  runApp(const KiboApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    KiboApp(
+      supabase: SupabaseService(config: const SupabaseConfig.fromEnvironment()),
+    ),
+  );
 }
 
 class KiboApp extends StatelessWidget {
-  const KiboApp({super.key});
+  const KiboApp({super.key, required this.supabase});
+
+  final SupabaseService supabase;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +39,47 @@ class KiboApp extends StatelessWidget {
         ),
         fontFamily: 'Roboto',
       ),
-      home: const KiboHomePage(),
+      home: FutureBuilder<SupabaseStartupResult>(
+        future: supabase.initialize(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          final result = snapshot.requireData;
+          if (result.isReady) return const KiboHomePage();
+          return Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.settings_outlined,
+                        color: kiboGreen,
+                        size: 40,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Configuration KIBO',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(result.errorMessage!, textAlign: TextAlign.center),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

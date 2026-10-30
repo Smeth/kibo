@@ -25,3 +25,9 @@
 Fournisseur SMS et fonctionnement au Congo ; identifiant Android définitif ; schéma PostgreSQL et politiques RLS ; stratégie de visibilité Storage ; technologie de l'administration web ; exigences légales et processus de modération.
 
 Toute nouvelle décision importante doit être ajoutée ici avec date, contexte et conséquences.
+
+## 2026-10-30 — Initialisation Supabase (KIBO-002)
+
+Configuration publique par `--dart-define` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`), centralisée sans fichier de secrets ni valeur réelle versionnée. Les formats publishable et JWT anon sont acceptés ; le contrôle local ne vérifie pas la signature ni la joignabilité et ne remplace pas RLS.
+
+Un service injectable, créé au démarrage, mémorise l’initialisation et expose le client après réussite. Configuration manquante/invalide ou erreur SDK : écran explicite sans crash ni affichage de l’exception. Pas de retry implicite : correction et relancement nécessaires. Persistance de session, rafraîchissement et liens d’authentification désactivés jusqu’à la tâche dédiée. Cette décision prépare l’accès SDK sans implémenter de fonctionnalité métier.
