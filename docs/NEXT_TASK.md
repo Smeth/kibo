@@ -3,6 +3,8 @@
 ## Statut
 À prendre en charge par Codex dans VS Code. Cette tâche n'est pas encore exécutée.
 
+Issue GitHub : https://github.com/Smeth/kibo/issues/1
+
 ## Tâche KIBO-001 — Publier le socle Flutter local dans une branche de travail
 
 ### Contexte connu
