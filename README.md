@@ -4,8 +4,8 @@
 
 KIBO est une marketplace congolaise de produits et services. Le lancement initial cible Brazzaville, avec une extension prévue vers Pointe-Noire et d'autres villes.
 
-## État actuel
-Dépôt de documentation et de préparation. Ne pas supposer que l'application Flutter ou le backend sont déjà implémentés.
+## État du projet
+Le projet Flutter a été initialisé et testé localement sur un téléphone Android. Le socle Flutter local doit encore être publié dans GitHub via une Pull Request. Voir [l'avancement](docs/PROGRESS.md) et la [prochaine tâche](docs/NEXT_TASK.md).
 
 ## Produit V1
 - Consultation publique des annonces sans compte.
@@ -32,12 +32,16 @@ Dépôt de documentation et de préparation. Ne pas supposer que l'application F
 ## Technologies
 Flutter / Dart ; Supabase / PostgreSQL ; Supabase Auth, Storage, Realtime et RLS.
 
-## Documentation
+## Documentation et pilotage
 - [Cahier des charges](docs/CAHIER_DES_CHARGES.md)
 - [Charte graphique](docs/CHARTE_GRAPHIQUE.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Décisions techniques](docs/DECISIONS_TECHNIQUES.md)
 - [Feuille de route](docs/ROADMAP.md)
+- [Avancement](docs/PROGRESS.md)
+- [Prochaine tâche](docs/NEXT_TASK.md)
+- [Automatisation](docs/AUTOMATION.md)
 - [Instructions Codex](AGENTS.md)
 
-Les instructions de lancement local seront ajoutées après création et vérification du projet Flutter.
+## Qualité
+Les Pull Requests et les pushs pertinents déclenchent GitHub Actions pour vérifier le formatage Dart, l'analyse statique et les tests Flutter lorsque le projet Flutter est présent.
