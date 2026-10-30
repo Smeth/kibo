@@ -1,0 +1,34 @@
+name: Signaler un bug KIBO
+description: Signaler un comportement incorrect
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportement observé
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Étapes pour reproduire
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Appareil / version
+      placeholder: "TECNO CK6n, Android 14"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / captures
+      description: Ne jamais coller de tokens, mots de passe ou secrets.
