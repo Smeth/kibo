@@ -34,6 +34,8 @@ Pendant l’initialisation, un indicateur de chargement est affiché. Configurat
 
 Les tests de configuration, d’initialisation et de widgets utilisent un initialiseur injecté, des valeurs fictives et aucun projet réel. Une initialisation réussie ne prouve pas que le serveur est joignable ou que la clé est acceptée : aucune requête métier ni sonde de table n’est exécutée. La validation distante avec les paramètres réels reste distincte des tests locaux.
 
+Le test réel KIBO-002 a été réussi et confirmé par le propriétaire le 2026-10-31 sur TECNO CK6n : SDK initialisé, accueil affiché, `GET /auth/v1/settings` depuis le téléphone -> HTTP 401 sans clé publique et HTTP 200 avec la clé publique. Cette sonde temporaire en mémoire n’a modifié aucun fichier source et n’est pas intégrée au démarrage de l’application. Aucune valeur de clé n’a été publiée dans le chat ou Git. Voir [PROGRESS.md](PROGRESS.md) pour les preuves et limites ; les tables, RLS et parcours d’authentification restent à valider dans leurs tâches dédiées.
+
 Android : permission Internet dans le manifeste principal, y compris pour les builds release. iOS : aucun assouplissement ATS ni callback OAuth ajouté ; HTTPS est conservé. Les autres plateformes ne sont pas validées dans cette tâche.
 
 Référence : [initialisation officielle du SDK Flutter Supabase](https://supabase.com/docs/reference/dart/initializing).

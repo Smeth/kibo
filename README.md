@@ -7,6 +7,8 @@ KIBO est une marketplace congolaise de produits et services. Le lancement initia
 ## État du projet
 Le projet Flutter existant et son premier accueil KIBO sont versionnés sur `main` selon le workflow Direct Main. L’accueil utilise des données de démonstration. L’initialisation Supabase est centralisée ; les paramètres publics sont fournis au build, sans clé dans le dépôt. Voir [l'avancement](docs/PROGRESS.md) et la [prochaine tâche](docs/NEXT_TASK.md).
 
+KIBO-002 est terminée : initialisation et connexion réelle Supabase vérifiées depuis le TECNO CK6n le 2026-10-31 (HTTP 401 sans clé publique, HTTP 200 avec la clé). KIBO-003 est préparée comme proposition de socle UI Manrope/Emerald à valider, sans implémentation commencée. Ces validations ne couvrent pas encore les tables, RLS ou parcours d’authentification utilisateur.
+
 ## Lancement local
 Socle vérifié avec Flutter 3.38.5 / Dart 3.10.4.
 

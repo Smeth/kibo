@@ -16,49 +16,36 @@ Commit de clôture documentaire communiqué : [7f9782d55abb84879896bf42d512ff2cf
 ## Workflow applicable
 Le propriétaire a choisi Direct Main le 2026-10-30. Pour les tâches courantes : travailler sur `main`, préserver les modifications locales, tester avant commit et push, ne jamais faire de force-push. En cas de diff inattendu ou de test échoué, ne pas pousser.
 
-## KIBO-002 — Préparer et vérifier la connexion Supabase dans Flutter
-**Statut : implémentée ; contrôles locaux et compilation APK ARM64 réussis. À conserver comme tâche courante pour validation avec le projet Supabase réel.**
+## KIBO-002 — Connexion Supabase
+**Statut : terminée, test réel inclus, confirmé par le propriétaire le 2026-10-31.**
 
-Configuration, service injectable, gestion du démarrage, tests isolés et guide PowerShell réalisés. Les contrôles locaux et limites sont consignés dans [PROGRESS.md](PROGRESS.md). Aucune clé réelle n’a été utilisée. Le lancement avec les paramètres publics du projet réel et la validation distante restent à effectuer localement, sans copier de clé dans GitHub. Ne pas démarrer une autre fonctionnalité métier au titre de cette tâche.
+Issue de référence : https://github.com/Smeth/kibo/issues/2. Implémentation : [`ed1d4fc`](https://github.com/Smeth/kibo/commit/ed1d4fc2997aa914a06e8a78cf4ecf6e1db3e988).
 
-### Blocage Android résolu le 2026-10-30
-Le propriétaire a autorisé le diagnostic et la réparation de l’environnement. Le XML corrompu contenait uniquement des octets nuls. Les deux anciens dossiers d’outils ont été sauvegardés hors du SDK avant réinstallation officielle des Command-line Tools stables. L’inventaire SDK est désormais cohérent. Les deux JAR manquants ont été résolus par Gradle depuis Google Maven ; les téléchargements ont réussi avec TLS standard, sans désactiver SSL ni modifier les dépendances applicatives.
+Sur TECNO CK6n / Android 14 : SDK Supabase initialisé, accueil KIBO affiché, requête HTTPS en lecture seule depuis le téléphone -> HTTP 401 sans clé publique et HTTP 200 avec la clé publique. Aucune valeur de clé publiée dans le chat ou Git ; aucun fichier source modifié, commit ou push pendant le test réel. Les détails, la CI réussie et les limites sont conservés dans [PROGRESS.md](PROGRESS.md).
 
-Les 21 fichiers préparés ont été préservés pendant la réparation ; seuls les comptes rendus sont ensuite actualisés. `flutter pub get`, formatage (7 fichiers inchangés), `flutter analyze --fatal-infos`, `flutter test` (13 tests), compilation APK debug ARM64 et contrôles Git réussis. Voir les preuves et limites dans [PROGRESS.md](PROGRESS.md). Le SHA et le résultat du push figurent dans le compte rendu de session.
+## KIBO-003 — Intégrer le socle UI Manrope et Emerald
+**Statut : préparée, périmètre proposé à valider par le propriétaire avant implémentation. Non démarrée.**
 
-### Validation restante
-Lancer localement avec les paramètres publics du projet réel selon [SUPABASE_SETUP.md](SUPABASE_SETUP.md), sans écrire les valeurs dans Git ni dans les logs. Aucun test de joignabilité ni d’acceptation d’une clé réelle n’a été effectué. Ne pas déclarer la connexion distante ou la préparation production validée, ni commencer une fonctionnalité métier supplémentaire.
+Cette proposition suit l’étape « Socle UI » de [ROADMAP.md](ROADMAP.md) et la [charte graphique](CHARTE_GRAPHIQUE.md). Aucune issue KIBO-003 n’est encore créée ; ne pas inventer de numéro ou de lien. La présente clôture documentaire n’autorise aucune modification du code applicatif.
 
-Issue : https://github.com/Smeth/kibo/issues/2
+### Objectif proposé
+Appliquer la typographie Manrope et centraliser le thème clair Emerald afin d’aligner le socle visuel existant sur la charte, sans développer de fonctionnalité métier.
 
-### Objectif
-Poser une connexion Supabase propre, centralisée et testable, sans commencer les fonctionnalités métier.
+### Travail à réaliser après validation du périmètre
+1. Lire `AGENTS.md`, `CHARTE_GRAPHIQUE.md`, `ARCHITECTURE.md`, `DECISIONS_TECHNIQUES.md` et `PROGRESS.md`. Vérifier le remote, la branche `main` et l’état Git ; préserver tous les changements existants.
+2. Inspecter le thème actuel et préparer une intégration Manrope disponible hors ligne. Vérifier la provenance et la licence des fichiers de police avant ajout ; documenter la méthode retenue. Respecter les graisses 400, 600 et 800 de la charte.
+3. Centraliser palette, styles de texte et thèmes des composants Flutter nécessaires dans une petite structure dédiée, adaptée à l’architecture existante. Conserver le thème clair ; ne pas imposer de refonte générale de `main.dart`.
+4. Harmoniser les composants déjà présents avec la charte : marges horizontales de 16, espacements multiples de 4, rayons des cartes de 16, rayons des boutons de 12, dimensions des champs et icônes conformes. Ne pas modifier les parcours ni les données de démonstration au titre de cette tâche.
+5. Préserver le démarrage Supabase centralisé, l’écran de chargement, les erreurs de configuration et l’affichage de l’accueil après réussite ; aucun paramètre réel ne doit entrer dans Git ou les tests.
+6. Vérifier le rendu sur petite largeur et avec texte agrandi, ainsi que sur le TECNO. Adapter les tests pertinents sans remplacer les tests de configuration et de démarrage Supabase.
+7. Exécuter résolution des dépendances si nécessaire, formatage, `flutter analyze --fatal-infos`, `flutter test`, compilation APK ARM64 et `git diff --check`. Rapporter uniquement les résultats réellement obtenus.
+8. Mettre à jour la documentation et les décisions importantes. Committer et pousser sur `main` seulement si les contrôles passent et le diff correspond au périmètre validé ; aucun force-push, aucune branche ou PR systématique.
 
-### Instructions
-1. Lire `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/DECISIONS_TECHNIQUES.md` et `docs/PROGRESS.md`.
-2. Vérifier `git status --short --branch`, le remote et la présence des fichiers avant de modifier quoi que ce soit.
-3. Ajouter une version de `supabase_flutter` compatible avec la contrainte Dart/Flutter du projet et consigner les versions dans `pubspec.lock`.
-4. Utiliser `--dart-define=SUPABASE_URL=...` et `--dart-define=SUPABASE_ANON_KEY=...` (ou une approche équivalente documentée) pour la configuration. La clé anon/publishable est une clé client publique soumise aux politiques RLS ; elle ne doit jamais être confondue avec `service_role`.
-5. Ne jamais mettre de secret privilégié dans l'application, le dépôt, les tests ou les logs. Ne jamais ajouter de valeur réelle de clé dans la documentation.
-6. Initialiser Supabase une seule fois, au démarrage, uniquement quand la configuration nécessaire est valide. Si elle est absente ou invalide, garder une interface explicite d'erreur de configuration au lieu de provoquer un crash.
-7. Créer une petite abstraction de configuration et d'initialisation facilement testable. Ne pas créer de repositories métier prématurément.
-8. Ajouter des tests pour la configuration présente/absente/invalide et pour le chemin de démarrage approprié, avec isolation de l'accès réseau.
-9. Documenter les commandes Windows PowerShell pour lancer l'application avec les deux valeurs de configuration. Ne pas inscrire de valeur de clé dans les exemples.
-10. Exécuter `flutter pub get`, `dart format --output=none --set-exit-if-changed lib test`, `flutter analyze --fatal-infos`, `flutter test` et `git diff --check`.
-11. Mettre à jour `docs/PROGRESS.md` avec les résultats réels. Garder ce fichier comme prochaine tâche KIBO-002 jusqu'à sa validation complète.
+### Critères d’acceptation proposés
+- Manrope et ses graisses sont intégrées selon la charte, sans téléchargement de police nécessaire à l’exécution.
+- Couleurs et styles communs sont centralisés ; l’accueil conserve son contenu et le démarrage Supabase conserve ses comportements.
+- Aucun débordement observé dans les tailles testées ; contrôles automatiques et compilation ARM64 réussis, limites visuelles rapportées.
+- Aucun secret ni clé réelle ajouté ; modifications petites, revues et documentées.
 
 ### Hors périmètre
-- Pas de tables SQL, migrations, policies RLS ni données de démonstration Supabase.
-- Pas d'authentification, OTP, profil, Storage, annonces, favoris, commentaires ou chat.
-- Pas de refonte UI ni dépendance UI.
-- Pas de clé `service_role` dans Flutter, même temporairement.
-
-### Critères d'acceptation
-- Configuration de connexion centralisée, documentée et testée.
-- Application toujours compilable en l'absence de valeurs Supabase.
-- Aucun secret privilégié ou clé réelle commité.
-- Toutes les commandes de validation réussissent.
-- Compte rendu des fichiers modifiés, commandes, résultats et limites.
-
-### Publication
-Travailler directement sur `main`. Ne pas créer de branche ou PR pour cette tâche courante. Committer et pousser seulement après que tous les contrôles passent et que le diff ne contient que les changements attendus. Si test échoué, conflit ou changement inattendu : s'arrêter et demander confirmation.
+Authentification utilisateur, schéma SQL, migrations, politiques RLS, Storage, publication et consultation d’annonces réelles, chat, favoris, notifications, modération, paiements, nouvelle navigation métier et thème sombre. Ne pas réinitialiser ou recréer le projet Flutter.

@@ -1,6 +1,6 @@
 # Avancement KIBO
 
-Dernière mise à jour : 2026-10-30
+Dernière mise à jour : 2026-10-31
 
 ## État confirmé
 - Documentation produit, identité visuelle, architecture cible et workflow présents.
@@ -43,7 +43,7 @@ Dernière mise à jour : 2026-10-30
 - Le SHA du commit de clôture documentaire et le résultat de son push sont fournis dans le compte rendu de session.
 
 ## KIBO-002 — Connexion Supabase
-- **Statut : implémentée, 13 tests et compilation APK ARM64 validés après réparation de l’environnement Android.** Issue : https://github.com/Smeth/kibo/issues/2. KIBO-002 reste la tâche courante pour la validation avec le projet Supabase réel ; aucune fonctionnalité métier suivante n’est commencée.
+- **Statut : terminée, test réel de connexion Supabase inclus, confirmé par le propriétaire le 2026-10-31.** Issue : https://github.com/Smeth/kibo/issues/2. Implémentation publiée sur `main` dans [`ed1d4fc2997aa914a06e8a78cf4ecf6e1db3e988`](https://github.com/Smeth/kibo/commit/ed1d4fc2997aa914a06e8a78cf4ecf6e1db3e988). Aucune fonctionnalité métier suivante n’est commencée.
 - Périmètre : ajouter le SDK Supabase compatible, initialiser le client de façon centralisée et testable, injecter URL + clé anon/publishable via paramètres de build, gérer proprement la configuration absente/invalide et documenter le lancement PowerShell.
 - Hors périmètre : schéma SQL, migrations, RLS, authentification, Storage et fonctionnalités métier.
 - Garde-fou : jamais de clé `service_role` dans Flutter ; aucune vraie clé ne doit être écrite dans les fichiers du dépôt.
@@ -84,10 +84,29 @@ Dernière mise à jour : 2026-10-30
 - `git diff --check`, `git diff --cached --check` et revue intégrale du diff : réalisés ; aucun fichier de diagnostic, cache, SDK, clé réelle ou secret privilégié sélectionné pour publication.
 - Références officielles : [sdkmanager](https://developer.android.com/tools/sdkmanager), [Android CLI](https://developer.android.com/tools/agents/android-cli). Journaux et scripts de diagnostic locaux conservés sous `.dart_tool/`, hors Git.
 
+### Test réel de connexion — 2026-10-31
+- Application lancée sur TECNO CK6n / Android 14 avec les deux paramètres publics saisis localement et injectés au build. Aucune valeur de clé ni URL propre au projet n’est reproduite dans ce compte rendu.
+- Initialisation réelle du SDK Supabase réussie et accueil `KiboHomePage` confirmé sur le téléphone.
+- Sonde HTTPS temporaire, exécutée en mémoire depuis le processus KIBO sur le téléphone : `GET /auth/v1/settings`, sans clé publique -> HTTP 401 ; même requête avec la clé publique du client initialisé -> HTTP 200.
+- Ces résultats confirment la joignabilité du service et l’acceptation de la clé publique depuis le TECNO, au-delà de la seule initialisation locale du SDK.
+- Aucun parcours de connexion utilisateur, aucune écriture métier, aucune requête de table ni modification de RLS effectués.
+- La clé publique n’a été publiée ni dans le chat ni dans Git. Aucun fichier source modifié, aucun commit ni push supplémentaire pendant ce test ; dépôt propre et synchronisé après contrôle. Le propriétaire confirme ces résultats.
+- [CI du commit d’implémentation](https://github.com/Smeth/kibo/actions/runs/41136806799) : terminée avec succès, statut revérifié lors de la clôture documentaire.
+
+### Clôture documentaire — 2026-10-31
+- Seuls `README.md`, `docs/PROGRESS.md`, `docs/NEXT_TASK.md` et `docs/SUPABASE_SETUP.md` sont actualisés ; aucun code applicatif ni dépendance modifié et aucune implémentation de KIBO-003 commencée.
+- Contrôles avant commit : `dart format --output=none --set-exit-if-changed lib test` (7 fichiers, 0 changement), `flutter analyze --no-pub --fatal-infos` (aucun problème), `flutter test --no-pub` (13 tests réussis), `git diff --check` et relecture du diff.
+- La fermeture de l’issue #2 avec résumé du test réel est autorisée par le propriétaire uniquement après confirmation du commit et du push documentaires. Aucun paramètre réel n’est inclus dans les documents ou le commentaire de clôture.
+
 ### Limites KIBO-002
-- Initialisation testée avec un initialiseur injecté ; pas de connexion avec les paramètres du projet réel, pas de vérification de clé côté serveur ni de joignabilité. L’initialisation du SDK ne constitue pas une sonde réseau.
+- Les tests automatisés restent isolés du réseau. Le test réel ci-dessus valide l’initialisation, la joignabilité du service testé et l’acceptation de la clé publique ; il ne valide pas les tables, les politiques RLS ni les parcours d’authentification utilisateur.
 - La validation de format et de rôle du JWT n’est pas une vérification cryptographique. RLS et grants côté serveur restent indispensables avant d’exposer des données ; aucune policy n’est créée ou désactivée ici.
-- APK debug ARM64 validé ; compilation multiarchitecture non relancée, APK release et lancement sur téléphone non vérifiés dans cette reprise. Aucun contournement de tâche Gradle ni affaiblissement TLS.
+- APK debug ARM64 validé et lancement sur TECNO confirmé lors du test réel ; compilation multiarchitecture et APK release non validés. Aucun contournement de tâche Gradle ni affaiblissement TLS.
 - Pas de compilation iOS/desktop ni de validation sur ces plateformes. Pas de livraison production validée.
 - Aucun secret ou clé réelle ajouté ; les chaînes de tests qui évoquent un rôle privilégié servent uniquement au rejet de données fictives.
-- Le SHA, la confirmation de publication sur `main` et le résultat de la CI sont fournis dans le compte rendu de session. Les validations locales ci-dessus ne constituent pas à elles seules une preuve d’exécution de GitHub Actions ni de connexion au projet Supabase réel.
+- Le commit de clôture documentaire, le résultat de son push et la fermeture de l’issue sont rapportés dans le compte rendu de session. Le workflow CI Flutter filtre les chemins applicatifs : un commit limité au README et à `docs/` ne déclenche pas cette CI.
+
+## KIBO-003 — Proposition de socle UI Manrope / Emerald
+- **Statut : préparée dans `NEXT_TASK.md`, périmètre proposé à valider, aucune implémentation commencée.** Aucun numéro d’issue GitHub n’est attribué à cette tâche à ce stade.
+- Proposition fondée sur l’étape « Socle UI » de `ROADMAP.md` et `CHARTE_GRAPHIQUE.md` : intégrer Manrope et centraliser le thème Emerald, en préservant l’accueil et le démarrage Supabase.
+- Aucun code applicatif ni dépendance modifié lors de cette préparation documentaire ; les fonctionnalités métier restent hors périmètre.
