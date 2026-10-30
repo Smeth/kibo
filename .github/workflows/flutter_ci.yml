@@ -36,7 +36,6 @@ jobs:
   flutter-quality:
     name: Flutter format, analyze and test
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('pubspec.yaml') != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,6 +43,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.38.5'
           channel: stable
           cache: true
 
@@ -61,11 +61,3 @@ jobs:
 
       - name: Run tests
         run: flutter test
-
-  documentation-only:
-    name: Documentation-only repository state
-    runs-on: ubuntu-latest
-    if: ${{ hashFiles('pubspec.yaml') == '' }}
-    steps:
-      - name: Explain skipped Flutter checks
-        run: echo "Flutter checks are skipped because pubspec.yaml is not yet present on this GitHub branch. Commit the local Flutter scaffold to activate the Flutter CI job."
