@@ -58,3 +58,7 @@ Les URL et clés publiques nécessaires au client peuvent être configurées par
 - `main` crée un service unique injecté dans `KiboApp` ; le démarrage affiche chargement, erreur de configuration ou accueil existant.
 - Les tests remplacent l’initialiseur SDK, sans réseau ; aucun repository, schéma ou parcours d’authentification ajouté.
 - Voir [SUPABASE_SETUP.md](SUPABASE_SETUP.md) pour PowerShell, limites de validation et garde-fous.
+
+### Socle UI — 2026-10-31
+
+`lib/core/theme/kibo_colors.dart` et `kibo_theme.dart` portent la palette et le thème clair Manrope. Les trois graisses statiques sont des assets locaux déclarés dans `pubspec.yaml`, avec licence embarquée et enregistrée dans Flutter. `main.dart` conserve ses widgets et son chemin de démarrage Supabase ; seules la présentation et l’adaptation aux tailles d’écran changent. Aucun service ou repository métier supplémentaire. Voir [UI_THEME.md](UI_THEME.md) pour provenance, organisation, tests et limites.

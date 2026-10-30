@@ -23,29 +23,18 @@ Issue de référence : https://github.com/Smeth/kibo/issues/2. Implémentation :
 
 Sur TECNO CK6n / Android 14 : SDK Supabase initialisé, accueil KIBO affiché, requête HTTPS en lecture seule depuis le téléphone -> HTTP 401 sans clé publique et HTTP 200 avec la clé publique. Aucune valeur de clé publiée dans le chat ou Git ; aucun fichier source modifié, commit ou push pendant le test réel. Les détails, la CI réussie et les limites sont conservés dans [PROGRESS.md](PROGRESS.md).
 
-## KIBO-003 — Intégrer le socle UI Manrope et Emerald
-**Statut : préparée, périmètre proposé à valider par le propriétaire avant implémentation. Non démarrée.**
+## KIBO-003 — Socle UI Manrope / Emerald
+**Statut : implémentation terminée, contrôles locaux réussis le 2026-10-31.**
 
-Cette proposition suit l’étape « Socle UI » de [ROADMAP.md](ROADMAP.md) et la [charte graphique](CHARTE_GRAPHIQUE.md). Aucune issue KIBO-003 n’est encore créée ; ne pas inventer de numéro ou de lien. La présente clôture documentaire n’autorise aucune modification du code applicatif.
+Le propriétaire a validé le périmètre et autorisé l’implémentation sur `main`. Manrope 400/600/800 est embarquée localement depuis la source officielle, avec licence SIL OFL 1.1. Palette et thème clair centralisés ; accueil harmonisé sans changement fonctionnel ni modification du service ou de la configuration Supabase.
 
-### Objectif proposé
-Appliquer la typographie Manrope et centraliser le thème clair Emerald afin d’aligner le socle visuel existant sur la charte, sans développer de fonctionnalité métier.
+Validations réussies : `flutter pub get`, `dart format lib test`, `flutter analyze --fatal-infos`, `flutter test` (**24 tests, dont les 13 existants inchangés**), `flutter build apk --debug --target-platform android-arm64` et `git diff --check`. Tests responsive avec vraies polices et aperçus locaux inspectés ; aucun nouveau test physique TECNO ni test réseau Supabase réalisé pour cette intégration UI.
 
-### Travail à réaliser après validation du périmètre
-1. Lire `AGENTS.md`, `CHARTE_GRAPHIQUE.md`, `ARCHITECTURE.md`, `DECISIONS_TECHNIQUES.md` et `PROGRESS.md`. Vérifier le remote, la branche `main` et l’état Git ; préserver tous les changements existants.
-2. Inspecter le thème actuel et préparer une intégration Manrope disponible hors ligne. Vérifier la provenance et la licence des fichiers de police avant ajout ; documenter la méthode retenue. Respecter les graisses 400, 600 et 800 de la charte.
-3. Centraliser palette, styles de texte et thèmes des composants Flutter nécessaires dans une petite structure dédiée, adaptée à l’architecture existante. Conserver le thème clair ; ne pas imposer de refonte générale de `main.dart`.
-4. Harmoniser les composants déjà présents avec la charte : marges horizontales de 16, espacements multiples de 4, rayons des cartes de 16, rayons des boutons de 12, dimensions des champs et icônes conformes. Ne pas modifier les parcours ni les données de démonstration au titre de cette tâche.
-5. Préserver le démarrage Supabase centralisé, l’écran de chargement, les erreurs de configuration et l’affichage de l’accueil après réussite ; aucun paramètre réel ne doit entrer dans Git ou les tests.
-6. Vérifier le rendu sur petite largeur et avec texte agrandi, ainsi que sur le TECNO. Adapter les tests pertinents sans remplacer les tests de configuration et de démarrage Supabase.
-7. Exécuter résolution des dépendances si nécessaire, formatage, `flutter analyze --fatal-infos`, `flutter test`, compilation APK ARM64 et `git diff --check`. Rapporter uniquement les résultats réellement obtenus.
-8. Mettre à jour la documentation et les décisions importantes. Committer et pousser sur `main` seulement si les contrôles passent et le diff correspond au périmètre validé ; aucun force-push, aucune branche ou PR systématique.
+Provenance, licence et structure du thème : [UI_THEME.md](UI_THEME.md). Résultats détaillés et limites : [PROGRESS.md](PROGRESS.md). Le commit, le push et le statut CI sont fournis dans le compte rendu de livraison. Aucune issue KIBO-003 attribuée à ce stade.
 
-### Critères d’acceptation proposés
-- Manrope et ses graisses sont intégrées selon la charte, sans téléchargement de police nécessaire à l’exécution.
-- Couleurs et styles communs sont centralisés ; l’accueil conserve son contenu et le démarrage Supabase conserve ses comportements.
-- Aucun débordement observé dans les tailles testées ; contrôles automatiques et compilation ARM64 réussis, limites visuelles rapportées.
-- Aucun secret ni clé réelle ajouté ; modifications petites, revues et documentées.
+## Suite à cadrer avec le propriétaire
+Aucune tâche KIBO-004 immédiatement exécutable n’est encore définie. Ne pas commencer de fonctionnalité métier sans périmètre validé.
 
-### Hors périmètre
-Authentification utilisateur, schéma SQL, migrations, politiques RLS, Storage, publication et consultation d’annonces réelles, chat, favoris, notifications, modération, paiements, nouvelle navigation métier et thème sombre. Ne pas réinitialiser ou recréer le projet Flutter.
+Contrôle complémentaire proposé : revue visuelle du thème sur le TECNO CK6n avec la configuration publique saisie localement selon [SUPABASE_SETUP.md](SUPABASE_SETUP.md), sans publier de valeur ni refaire la configuration Supabase. Ce contrôle physique reste à réaliser ; les aperçus et tests automatisés ne le remplacent pas.
+
+Authentification, schéma SQL, migrations, RLS, Storage, annonces réelles, chat et autres fonctionnalités restent hors du périmètre de KIBO-003. Conserver le workflow Direct Main et tous les changements existants.

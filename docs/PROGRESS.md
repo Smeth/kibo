@@ -106,7 +106,26 @@ Dernière mise à jour : 2026-10-31
 - Aucun secret ou clé réelle ajouté ; les chaînes de tests qui évoquent un rôle privilégié servent uniquement au rejet de données fictives.
 - Le commit de clôture documentaire, le résultat de son push et la fermeture de l’issue sont rapportés dans le compte rendu de session. Le workflow CI Flutter filtre les chemins applicatifs : un commit limité au README et à `docs/` ne déclenche pas cette CI.
 
-## KIBO-003 — Proposition de socle UI Manrope / Emerald
-- **Statut : préparée dans `NEXT_TASK.md`, périmètre proposé à valider, aucune implémentation commencée.** Aucun numéro d’issue GitHub n’est attribué à cette tâche à ce stade.
-- Proposition fondée sur l’étape « Socle UI » de `ROADMAP.md` et `CHARTE_GRAPHIQUE.md` : intégrer Manrope et centraliser le thème Emerald, en préservant l’accueil et le démarrage Supabase.
-- Aucun code applicatif ni dépendance modifié lors de cette préparation documentaire ; les fonctionnalités métier restent hors périmètre.
+## KIBO-003 — Socle UI Manrope / Emerald
+- **Statut : implémentation terminée et validations locales réussies le 2026-10-31.** Périmètre validé par le propriétaire ; publication Direct Main après revue du diff. Le SHA, le push et la CI sont communiqués dans le compte rendu de livraison.
+- État initial propre sur `main`, synchronisé avec `origin/main` à `a407e04` ; aucun changement préexistant écrasé, aucun projet recréé.
+- Manrope locale 400/600/800 provenant du dépôt officiel `googlefonts/manrope`, révision `468c0dbe38efa331b80bfe9448256abe27be44c3`. TTF identiques aux originaux, poids vérifiés ; licence SIL OFL 1.1 complète conservée et embarquée. Provenance et empreintes dans [UI_THEME.md](UI_THEME.md).
+- Palette et thème clair centralisés dans `lib/core/theme/`, thème branché sur `MaterialApp`, licence enregistrée une seule fois et chargée à la demande.
+- Accueil harmonisé : typographie, couleurs, marges, cartes, boutons et navigation ; textes secondaires portés à 12 px minimum, grille adaptative et contenus pouvant grandir avec le texte. Catégories, quatre annonces fictives, callbacks et cinq destinations conservés.
+- `supabase_config.dart`, `supabase_service.dart` et les 13 tests précédents sont inchangés. États de chargement/erreur et initialiseur unique préservés ; aucune clé réelle utilisée ni nouvelle dépendance ajoutée.
+
+### Vérifications KIBO-003 — 2026-10-31
+- `flutter pub get` : réussi, sans modification du fichier de verrouillage.
+- `dart format lib test` : réussi, 12 fichiers traités.
+- `flutter analyze --fatal-infos` : aucun problème.
+- `flutter test` : **24 tests réussis**, dont les 13 existants et 11 nouveaux tests (polices/licence, thème, initialisation unique, responsive et erreur de configuration).
+- Rendu avec les vrais TTF : 320×640 à texte 1/2/3, 360×800 à 1,5, 393×800 à 2, 800×600 à 2 ; aucun débordement signalé, dernière annonce accessible par défilement et navigation conservée.
+- Aperçus 393×852 avec Manrope et Material Icons inspectés en haut de page et après défilement ; fichiers de contrôle uniquement sous `.dart_tool/`, ignorés.
+- `flutter build apk --debug --target-platform android-arm64` : réussi, code de sortie 0, assemblage en 18,7 secondes. Présence du moteur ARM64, des trois TTF et de la licence dans l’APK vérifiée ; aucun paramètre Supabase réel au build.
+- `git diff --check` : réussi ; revue du diff et contrôle des fichiers sélectionnés avant publication.
+
+### Limites KIBO-003 et suite
+- Aucun nouveau déploiement sur TECNO ni nouvelle requête Supabase réelle pour cette tâche ; la validation physique du thème reste à effectuer. Le test réel réussi de KIBO-002 reste distinct.
+- Les tests responsive couvrent les dimensions indiquées, pas toutes les combinaisons d’appareils et de réglages. La navigation utilise le plafonnement Material de ses libellés à 1,3 ; le corps ne plafonne pas le texte.
+- Aucun build release, multiarchitecture ou iOS validé. Aucune fonctionnalité métier, authentification, table, politique RLS ou messagerie ajoutée.
+- Prochaine tâche à cadrer et valider avec le propriétaire ; aucune implémentation de KIBO-004 commencée.

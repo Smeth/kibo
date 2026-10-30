@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'core/config/supabase_config.dart';
 import 'core/supabase/supabase_service.dart';
-
-const Color kiboGreen = Color(0xFF087F5B);
-const Color kiboDark = Color(0xFF075B45);
-const Color kiboBackground = Color(0xFFF7F9F7);
-const Color kiboText = Color(0xFF17211D);
-const Color kiboSecondary = Color(0xFF66736C);
-const Color kiboBorder = Color(0xFFE5ECE7);
+import 'core/theme/kibo_colors.dart';
+import 'core/theme/kibo_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  KiboTheme.registerFontLicense();
   runApp(
     KiboApp(
       supabase: SupabaseService(config: const SupabaseConfig.fromEnvironment()),
@@ -29,16 +25,7 @@ class KiboApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'KIBO',
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: kiboBackground,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: kiboGreen,
-          primary: kiboGreen,
-          surface: Colors.white,
-        ),
-        fontFamily: 'Roboto',
-      ),
+      theme: KiboTheme.light,
       home: FutureBuilder<SupabaseStartupResult>(
         future: supabase.initialize(),
         builder: (context, snapshot) {
@@ -59,16 +46,13 @@ class KiboApp extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.settings_outlined,
-                        color: kiboGreen,
+                        color: KiboColors.primary,
                         size: 40,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Configuration KIBO',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 12),
                       Text(result.errorMessage!, textAlign: TextAlign.center),
@@ -118,47 +102,70 @@ class _KiboHomePageState extends State<KiboHomePage> {
             SliverToBoxAdapter(child: _buildSectionHeader()),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              sliver: SliverGrid(
-                delegate: SliverChildListDelegate([
-                  _buildProductCard(
-                    title: 'Smartphone Android',
-                    price: '85 000 FCFA',
-                    location: 'Poto-Poto, Brazzaville',
-                    icon: Icons.phone_android,
-                    color: const Color(0xFFE5F2EC),
-                    label: 'Téléphones',
-                  ),
-                  _buildProductCard(
-                    title: 'Canapé moderne',
-                    price: '150 000 FCFA',
-                    location: 'Bacongo, Brazzaville',
-                    icon: Icons.weekend_outlined,
-                    color: const Color(0xFFF4EBDD),
-                    label: 'Maison',
-                  ),
-                  _buildProductCard(
-                    title: 'Moto en bon état',
-                    price: '450 000 FCFA',
-                    location: 'Moungali, Brazzaville',
-                    icon: Icons.two_wheeler,
-                    color: const Color(0xFFE9EDF6),
-                    label: 'Véhicules',
-                  ),
-                  _buildProductCard(
-                    title: 'Appartement à louer',
-                    price: '120 000 FCFA / mois',
-                    location: 'Talangaï, Brazzaville',
-                    icon: Icons.apartment,
-                    color: const Color(0xFFF2E9E5),
-                    label: 'Immobilier',
-                  ),
-                ]),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.68,
-                ),
+              sliver: SliverLayoutBuilder(
+                builder: (context, constraints) {
+                  final scaler = MediaQuery.textScalerOf(context);
+                  final columns =
+                      constraints.crossAxisExtent >=
+                          312 * (scaler.scale(14) / 14) + 12
+                      ? 2
+                      : 1;
+                  final cardWidth =
+                      (constraints.crossAxisExtent - (columns - 1) * 12) /
+                      columns;
+                  final imageHeight = (cardWidth * 0.85)
+                      .clamp(120.0, 240.0)
+                      .toDouble();
+                  // Réserve deux lignes par texte, sans plafonner l’échelle système.
+                  final cardHeight =
+                      imageHeight +
+                      48 +
+                      scaler.scale(14) * 3 +
+                      scaler.scale(16) * 3 +
+                      scaler.scale(12) * 3;
+                  return SliverGrid(
+                    delegate: SliverChildListDelegate([
+                      _buildProductCard(
+                        title: 'Smartphone Android',
+                        price: '85 000 FCFA',
+                        location: 'Poto-Poto, Brazzaville',
+                        icon: Icons.phone_android,
+                        color: const Color(0xFFE5F2EC),
+                        label: 'Téléphones',
+                      ),
+                      _buildProductCard(
+                        title: 'Canapé moderne',
+                        price: '150 000 FCFA',
+                        location: 'Bacongo, Brazzaville',
+                        icon: Icons.weekend_outlined,
+                        color: const Color(0xFFF4EBDD),
+                        label: 'Maison',
+                      ),
+                      _buildProductCard(
+                        title: 'Moto en bon état',
+                        price: '450 000 FCFA',
+                        location: 'Moungali, Brazzaville',
+                        icon: Icons.two_wheeler,
+                        color: const Color(0xFFE9EDF6),
+                        label: 'Véhicules',
+                      ),
+                      _buildProductCard(
+                        title: 'Appartement à louer',
+                        price: '120 000 FCFA / mois',
+                        location: 'Talangaï, Brazzaville',
+                        icon: Icons.apartment,
+                        color: const Color(0xFFF2E9E5),
+                        label: 'Immobilier',
+                      ),
+                    ]),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columns,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 12,
+                      mainAxisExtent: cardHeight,
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -169,47 +176,47 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }
 
   Widget _buildHeader() {
+    final text = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'KIBO',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -1.2,
-                  color: kiboGreen,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'KIBO',
+                  style: text.displaySmall?.copyWith(
+                    color: KiboColors.primary,
+                    letterSpacing: -1,
+                  ),
                 ),
-              ),
-              Text(
-                'Le commerce, simplement.',
-                style: TextStyle(fontSize: 11, color: kiboSecondary),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  'Le commerce, simplement.',
+                  style: text.bodySmall?.copyWith(
+                    color: KiboColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
           Container(
-            padding: const EdgeInsets.all(11),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: kiboBorder),
+              color: KiboColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: KiboColors.border),
             ),
-            child: const Icon(
-              Icons.notifications_none_rounded,
-              color: kiboText,
-              size: 23,
-            ),
+            child: const Icon(Icons.notifications_none_rounded),
           ),
-          const SizedBox(width: 10),
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: const Color(0xFFE5F2EC),
-            child: const Icon(Icons.person_outline, color: kiboGreen),
+          const SizedBox(width: 12),
+          const CircleAvatar(
+            radius: 24,
+            backgroundColor: KiboColors.primaryContainer,
+            child: Icon(Icons.person_outline, color: KiboColors.primary),
           ),
         ],
       ),
@@ -220,25 +227,27 @@ class _KiboHomePageState extends State<KiboHomePage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        height: 54,
+        constraints: const BoxConstraints(minHeight: 56),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: kiboBorder),
+          color: KiboColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: KiboColors.border),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            SizedBox(width: 15),
-            Icon(Icons.search, color: kiboSecondary, size: 23),
-            SizedBox(width: 10),
+            const Icon(Icons.search, color: KiboColors.textSecondary),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Que recherchez-vous ?',
-                style: TextStyle(color: kiboSecondary, fontSize: 14),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: KiboColors.textSecondary,
+                ),
               ),
             ),
-            Icon(Icons.tune_rounded, color: kiboGreen),
-            SizedBox(width: 15),
+            const SizedBox(width: 12),
+            const Icon(Icons.tune_rounded, color: KiboColors.primary),
           ],
         ),
       ),
@@ -246,55 +255,45 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }
 
   Widget _buildWelcome() {
+    final text = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 22, 16, 20),
+      margin: const EdgeInsets.fromLTRB(16, 24, 16, 24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [kiboGreen, kiboDark],
+          colors: [KiboColors.primary, KiboColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Bienvenue sur KIBO !',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 21,
-              fontWeight: FontWeight.w800,
-            ),
+            style: text.headlineSmall?.copyWith(color: KiboColors.surface),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Achetez, vendez et trouvez des services près de chez vous.',
-            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+            style: text.bodyMedium?.copyWith(color: KiboColors.surface),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(
-                Icons.location_on_outlined,
-                color: Colors.white,
-                size: 17,
-              ),
-              const SizedBox(width: 5),
-              const Text(
-                'Brazzaville, Congo',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
+              const Icon(Icons.location_on_outlined, color: KiboColors.surface),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Brazzaville, Congo',
+                  style: text.labelMedium?.copyWith(color: KiboColors.surface),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               const Icon(
                 Icons.arrow_forward_rounded,
-                color: Colors.white,
-                size: 20,
+                color: KiboColors.surface,
               ),
             ],
           ),
@@ -304,65 +303,61 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }
 
   Widget _buildCategories() {
+    final text = Theme.of(context).textTheme;
+    final labelScale = MediaQuery.textScalerOf(context).scale(12) / 12;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Explorer les catégories',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: kiboText,
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text('Explorer les catégories', style: text.titleMedium),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         SizedBox(
-          height: 94,
+          height: 56 + 16 + 36 * labelScale,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 15),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final category = categories[index];
               final selected = selectedCategory == index;
-
               return GestureDetector(
                 onTap: () {
                   setState(() => selectedCategory = index);
                 },
                 child: SizedBox(
-                  width: 66,
+                  width: 88 * labelScale,
                   child: Column(
                     children: [
                       Container(
-                        height: 55,
-                        width: 55,
+                        height: 56,
+                        width: 56,
                         decoration: BoxDecoration(
-                          color: selected ? kiboGreen : Colors.white,
-                          borderRadius: BorderRadius.circular(17),
-                          border: Border.all(color: kiboBorder),
+                          color: selected
+                              ? KiboColors.primary
+                              : KiboColors.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: KiboColors.border),
                         ),
                         child: Icon(
                           category.icon,
-                          color: selected ? Colors.white : kiboGreen,
-                          size: 25,
+                          color: selected
+                              ? KiboColors.surface
+                              : KiboColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 7),
+                      const SizedBox(height: 8),
                       Text(
                         category.name,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10,
+                        textAlign: TextAlign.center,
+                        style: text.bodySmall?.copyWith(
                           fontWeight: selected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: kiboText,
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                     ],
@@ -378,26 +373,17 @@ class _KiboHomePageState extends State<KiboHomePage> {
 
   Widget _buildSectionHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Text(
               'Annonces récentes',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: kiboText,
-              ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              'Voir tout',
-              style: TextStyle(color: kiboGreen, fontWeight: FontWeight.w700),
-            ),
-          ),
+          const SizedBox(width: 8),
+          TextButton(onPressed: () {}, child: const Text('Voir tout')),
         ],
       ),
     );
@@ -411,12 +397,8 @@ class _KiboHomePageState extends State<KiboHomePage> {
     required Color color,
     required String label,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kiboBorder),
-      ),
+    final text = Theme.of(context).textTheme;
+    return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,43 +412,50 @@ class _KiboHomePageState extends State<KiboHomePage> {
                   Center(
                     child: Icon(
                       icon,
-                      size: 65,
-                      color: kiboGreen.withValues(alpha: 0.65),
+                      size: 64,
+                      color: KiboColors.primary.withValues(alpha: 0.65),
                     ),
                   ),
                   Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          color: kiboGreen,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Positioned(
                     top: 8,
+                    left: 8,
                     right: 8,
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.favorite_border,
-                        size: 17,
-                        color: kiboText,
-                      ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: KiboColors.surface,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: text.labelMedium?.copyWith(
+                                  color: KiboColors.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const CircleAvatar(
+                          radius: 18,
+                          backgroundColor: KiboColors.surface,
+                          child: Icon(
+                            Icons.favorite_border,
+                            size: 24,
+                            color: KiboColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -474,48 +463,41 @@ class _KiboHomePageState extends State<KiboHomePage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: kiboText,
-                  ),
+                  style: text.titleSmall,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   price,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
+                  style: text.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: kiboGreen,
+                    color: KiboColors.primary,
                   ),
                 ),
-                const SizedBox(height: 7),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     const Icon(
                       Icons.location_on_outlined,
-                      size: 12,
-                      color: kiboSecondary,
+                      color: KiboColors.textSecondary,
                     ),
-                    const SizedBox(width: 3),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         location,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          color: kiboSecondary,
+                        style: text.bodySmall?.copyWith(
+                          color: KiboColors.textSecondary,
                         ),
                       ),
                     ),
@@ -531,9 +513,6 @@ class _KiboHomePageState extends State<KiboHomePage> {
 
   Widget _buildBottomNavigation() {
     return NavigationBar(
-      height: 68,
-      backgroundColor: Colors.white,
-      indicatorColor: const Color(0xFFE5F2EC),
       selectedIndex: selectedTab,
       onDestinationSelected: (index) {
         setState(() => selectedTab = index);
