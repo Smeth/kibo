@@ -4,7 +4,11 @@
 
 Issue de référence : https://github.com/Smeth/kibo/issues/1
 
-Le socle existant est intégré dans le commit accompagnant ce document. Les contrôles locaux et le lancement Android ont réussi ; voir [PROGRESS.md](PROGRESS.md). Le compte rendu de session indique le SHA et confirme le push, ou précise un éventuel blocage de publication.
+**Statut : terminée et publiée sur `origin/main`.**
+
+Commit du socle : [`4d7ccd38a98c0868737cb801bc5f79a2fcb1e283`](https://github.com/Smeth/kibo/commit/4d7ccd38a98c0868737cb801bc5f79a2fcb1e283).
+
+Le 2026-10-30, une nouvelle vérification a confirmé un dépôt propre, le socle déjà suivi et le même SHA sur `main` et `origin/main` après `git fetch origin main`. Les contrôles locaux ont été relancés avec succès et la [CI du socle](https://github.com/Smeth/kibo/actions/runs/41129735329) est réussie. Voir [PROGRESS.md](PROGRESS.md). Ne pas recréer le projet ni republier un doublon du socle.
 
 ## Workflow applicable
 Le propriétaire a explicitement choisi Direct Main le 2026-10-30. Cette instruction remplace l’ancienne version de KIBO-001 qui demandait une branche `feature/flutter-foundation` et une Pull Request. Pour les tâches courantes : travailler sur `main`, préserver les modifications locales, tester avant commit et push, ne jamais faire de force-push.
