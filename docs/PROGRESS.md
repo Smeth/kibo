@@ -42,5 +42,9 @@ Dernière mise à jour : 2026-10-30
 - Signature Android release encore configurée avec la clé debug du projet généré : aucune livraison production validée.
 - Le SHA du commit de clôture documentaire et le résultat de son push sont fournis dans le compte rendu de session.
 
-## Prochaine tâche
-Voir [NEXT_TASK.md](NEXT_TASK.md). Aucune nouvelle tâche métier n’est autorisée par ce fichier.
+## KIBO-002 — Connexion Supabase
+- **Statut : définie, pas encore exécutée.** Issue : https://github.com/Smeth/kibo/issues/2.
+- Périmètre : ajouter le SDK Supabase compatible, initialiser le client de façon centralisée et testable, injecter URL + clé anon/publishable via paramètres de build, gérer proprement la configuration absente/invalide et documenter le lancement PowerShell.
+- Hors périmètre : schéma SQL, migrations, RLS, authentification, Storage et fonctionnalités métier.
+- Garde-fou : jamais de clé `service_role` dans Flutter ; aucune vraie clé ne doit être écrite dans les fichiers du dépôt.
+- La tâche est décrite dans [NEXT_TASK.md](NEXT_TASK.md) et doit être exécutée sur `main` après vérification de l’état Git.
