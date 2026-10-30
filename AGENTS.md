@@ -22,23 +22,23 @@ Manrope ; Emerald #087F5B ; Emerald foncé #075B45 ; accent #12A879 ; fond #F7F9
 ## Règles de travail
 1. Inspecter le dépôt, le remote et `git status --short --branch` avant modification.
 2. Lire la tâche courante dans `docs/NEXT_TASK.md`, puis `docs/PROGRESS.md` et les documents pertinents.
-3. Préserver les changements existants ; ne jamais réinitialiser, forcer un push ou écraser le travail local.
-4. Avancer par petites étapes cohérentes, sans inventer de décisions métier ou de configuration.
-5. Pour toute tâche non triviale, travailler sur une branche `feature/*` ou `fix/*`, jamais directement sur `main`.
-6. Lancer formatage, analyse et tests pertinents ; rapporter les résultats réellement obtenus.
-7. Ouvrir une Pull Request vers `main` avec le modèle du dépôt ; ne jamais fusionner automatiquement.
-8. Mettre à jour `docs/PROGRESS.md` et proposer la prochaine tâche dans `docs/NEXT_TASK.md` après validation.
-9. Si un blocage, un choix produit ou une action destructive est rencontré, s'arrêter et demander confirmation.
+3. Travailler directement sur la branche `main` pour les tâches courantes.
+4. Préserver les changements existants ; ne jamais réinitialiser, faire de force-push ou écraser le travail local.
+5. Avant chaque commit, exécuter formatage, analyse et tests pertinents ; rapporter les résultats réellement obtenus.
+6. Pousser sur `origin main` uniquement si les contrôles passent et si le diff correspond exactement à la tâche.
+7. Si des tests échouent, des changements préexistants sont présents, un conflit apparaît ou une action risquée est nécessaire, arrêter et demander confirmation. Ne pas pousser un état cassé.
+8. Faire des commits petits et explicites. Mettre à jour `docs/PROGRESS.md` et `docs/NEXT_TASK.md` après chaque tâche terminée.
+9. Les branches et Pull Requests restent possibles pour les changements risqués ou les contributions externes, mais ne sont pas obligatoires pour le travail quotidien.
 
 ## Automatisation et communication
 - GitHub est la source de vérité partagée entre l'utilisateur, ChatGPT et Codex.
 - GitHub Issues décrit les tâches ; `docs/NEXT_TASK.md` contient la tâche immédiatement exécutable.
-- Codex dans VS Code lit les fichiers, code, teste et ouvre les PR.
-- GitHub Actions exécute la CI Flutter sur les PR et pushs pertinents.
-- ChatGPT peut lire et préparer des fichiers/Issues/PR via l'intégration GitHub, mais ne déclenche pas automatiquement une session Codex locale.
-- Après chaque tâche, Codex doit fournir un résumé, les commits/PR, les commandes exécutées, les résultats et les limites.
+- Codex dans VS Code lit les fichiers, code, teste et peut pousser directement sur `main` après les contrôles.
+- GitHub Actions exécute la CI Flutter sur les pushs vers `main` et les PR éventuelles.
+- ChatGPT peut lire et préparer des fichiers/Issues via l'intégration GitHub, mais ne déclenche pas automatiquement une session Codex locale.
+- Après chaque tâche, Codex fournit le commit SHA, les commandes exécutées, les résultats et les limites.
 
-## Sécurité impérative
+## Sécurité
 - Ne jamais commiter de secrets, fichiers .env réels, clés OAuth, tokens ou Supabase service_role.
 - Ne jamais intégrer service_role dans Flutter.
 - Ne jamais désactiver RLS pour contourner un problème.
