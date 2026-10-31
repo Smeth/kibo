@@ -14,8 +14,11 @@ begin
     return new;
   end if;
 
-  if new.seller_id is distinct from old.seller_id then
-    raise exception 'seller_id cannot be changed';
+  if new.seller_id is distinct from old.seller_id
+     or new.views_count is distinct from old.views_count
+     or new.published_at is distinct from old.published_at
+     or new.rejection_reason is distinct from old.rejection_reason then
+    raise exception 'seller cannot modify system-managed listing fields';
   end if;
 
   if new.status is distinct from old.status then
@@ -56,8 +59,8 @@ begin
     from public.listing_images
    where listing_id = new.listing_id;
 
-  if image_count >= 3 then
-    raise exception 'A listing may have at most 3 images';
+  if image_count >= 8 then
+    raise exception 'A listing may have at most 8 images';
   end if;
 
   return new;
