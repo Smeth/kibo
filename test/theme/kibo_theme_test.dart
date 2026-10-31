@@ -1,3 +1,4 @@
+import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -80,7 +81,12 @@ void main() {
     );
     expect(theme.textTheme.bodySmall?.fontSize, greaterThanOrEqualTo(12));
     expect(theme.textTheme.bodyMedium?.fontWeight, FontWeight.w400);
-    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    expect(
+      tester
+          .widget<KiboBottomNavigation>(find.byType(KiboBottomNavigation))
+          .destinations,
+      hasLength(5),
+    );
     expect(tester.takeException(), isNull);
   });
 

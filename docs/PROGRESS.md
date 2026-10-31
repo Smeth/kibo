@@ -129,3 +129,27 @@ Dernière mise à jour : 2026-10-31
 - Les tests responsive couvrent les dimensions indiquées, pas toutes les combinaisons d’appareils et de réglages. La navigation utilise le plafonnement Material de ses libellés à 1,3 ; le corps ne plafonne pas le texte.
 - Aucun build release, multiarchitecture ou iOS validé. Aucune fonctionnalité métier, authentification, table, politique RLS ou messagerie ajoutée.
 - Prochaine tâche à cadrer et valider avec le propriétaire ; aucune implémentation de KIBO-004 commencée.
+
+## KIBO-003.1 — Corrections responsive et alignement des cartes
+- **Statut : corrections terminées le 2026-10-31, validations automatisées et contrôle physique TECNO réussis. Publication Direct Main après revue du diff ; commit, push et CI rapportés dans le compte rendu.**
+- Départ vérifié : dépôt propre sur `main`, synchronisé avec `origin/main`, SHA `ffdf8d430abe2973d51994a69a637190ca58a7af`. TECNO CK6n disponible via ADB.
+- Inspection physique précédente de KIBO-003 : à 150 %, « Recherche » passe sur deux lignes et son icône se décale ; à 100 %, les illustrations d’une rangée ont des hauteurs différentes ; à 150 %, elles occupent trop d’espace.
+
+### Première tentative — arrêt demandé après échec
+- Corrections préparées, encore non validées : navigation dédiée mesurant les libellés à l’échelle système et répartissant les destinations sur plusieurs rangées si nécessaire ; illustrations bornées entre 140 et 180 px, indépendantes du texte ; rangées de cartes avec début du texte aligné et hauteur textuelle naturelle.
+- Les 24 tests sont conservés, avec adaptation des assertions liées au remplacement du composant de navigation. Six tests ciblés supplémentaires sont écrits mais n’ont pas été exécutés.
+- `flutter pub get` : réussi, sans nouvelle dépendance. `dart format lib test` : réussi, 14 fichiers traités, 6 formatés.
+- `flutter analyze --fatal-infos` : **échec, code 1** : `test/widget_test.dart:2:8 — Unused import: 'package:flutter/material.dart' — unused_import`.
+- Cause : l’adaptation du test de navigation a rendu cet import inutile. Reprise proposée : retirer cet import, puis relancer l’ensemble des contrôles demandés et vérifier les rendus avant toute publication.
+- `flutter test`, compilation ARM64 et nouvelle installation sur TECNO non exécutés pour cette correction après l’arrêt. Aucun succès de test ou de rendu physique revendiqué. Aucun réglage Android modifié pendant cette tentative.
+- Palette, polices, paramètres Supabase, configuration et service Supabase non modifiés. Aucune fonctionnalité métier ni tâche KIBO-004 commencée.
+
+### Reprise KIBO-003.1 — 2026-10-31
+- Branche `main` confirmée au même SHA de départ ; tous les changements préparés conservés. Après vérification des symboles utilisés, seul l’import Material inutilisé de `test/widget_test.dart` a été retiré du code à cette reprise.
+- Contrôles relancés dans l’ordre demandé : `flutter pub get` réussi ; `dart format lib test` : 14 fichiers, 0 changement ; `flutter analyze --fatal-infos` : aucun problème ; `flutter test` : **30 tests réussis**, dont les 24 précédents et les six nouveaux ; `flutter build apk --debug --target-platform android-arm64` : réussi, code 0, assemblage en 12,3 secondes ; `git diff --check` : réussi.
+- TECNO CK6n / Android 14 : version corrigée compilée, installée et lancée avec paramètres publics saisis dans des invites locales masquées ; accueil affiché après initialisation. Aucun fichier de configuration ni valeur publique réelle ajouté au dépôt, aucune modification de Supabase. Ce lancement ne constitue pas une nouvelle sonde HTTPS distante.
+- À 100 % : cinq libellés entiers sur une rangée, icônes centrées, séparations illustration/texte alignées dans les deux rangées de cartes ; quatre annonces, prix et localisations accessibles.
+- À 150 % (`font_scale=1.5`) : cinq destinations visibles sur deux rangées centrées, « Recherche » entier sur une ligne, sans décalage de son icône ; cartes en une colonne avec illustrations de 180 px logiques et texte naturel. Quatre annonces parcourues, informations lisibles ; les cinq destinations ont été touchées aux deux réglages et Profil sélectionné confirmé visuellement.
+- Captures ADB inspectées à 100 % et 150 %, conservées uniquement dans le répertoire temporaire `KIBO-003.1-visual`, hors dépôt. Une capture avec notification privée a été écartée et supprimée ; aucune capture publiée dans Git.
+- Réglage Android initial `font_scale=1.0` restauré et application relancée à l’accueil. Les trois défauts ciblés ne se reproduisent plus dans les conditions physiques testées.
+- Limites : contrôle physique limité au TECNO en portrait, à 100 % et 150 %. Pas de validation release ou iOS, ni nouvelle fonctionnalité métier. À fort agrandissement, la navigation occupe davantage de hauteur pour préserver les libellés et les zones tactiles. Le layout intrinsèque des cartes convient aux quatre éléments fictifs ; un flux réel devra être conçu séparément. KIBO-004 non commencée.

@@ -1,3 +1,4 @@
+import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -66,7 +67,9 @@ void main() {
         await tester.pumpWidget(KiboApp(supabase: service));
         await tester.pumpAndSettle();
         expect(find.text('KIBO'), findsOneWidget);
-        final navigationBounds = tester.getRect(find.byType(NavigationBar));
+        final navigationBounds = tester.getRect(
+          find.byType(KiboBottomNavigation),
+        );
         final searchLabelBounds = tester.getRect(find.text('Recherche'));
         expect(
           searchLabelBounds.top,
@@ -97,7 +100,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(
           tester
-              .widget<NavigationBar>(find.byType(NavigationBar))
+              .widget<KiboBottomNavigation>(find.byType(KiboBottomNavigation))
               .selectedIndex,
           4,
         );

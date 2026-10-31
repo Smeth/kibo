@@ -20,11 +20,13 @@ Licence : [SIL Open Font License 1.1 du même dépôt](https://github.com/google
 - `lib/core/theme/kibo_theme.dart` définit le thème clair Material 3, le `TextTheme` Manrope, les cartes, boutons, champs et la navigation. Titres/logo : 800 ; sections et libellés importants : 600 ; corps : 400. Les textes secondaires utilisent désormais au moins 12 px logiques.
 - `MaterialApp` utilise `KiboTheme.light`. L’accueil reste dans `main.dart`, avec les mêmes catégories, quatre annonces fictives, cinq destinations et callbacks. Pas de nouvelle navigation ni fonctionnalité métier.
 - Marges horizontales 16, espacements multiples de 4, cartes de rayon 16 et contrôles de rayon 12. Boutons de hauteur minimale 52, champ décoratif de hauteur minimale 56 et icônes standard 24. Les icônes d’illustration et de statut gardent une taille adaptée à leur rôle.
-- La grille choisit une ou deux colonnes selon la largeur disponible et l’échelle du texte ; sa hauteur réserve deux lignes pour titre, prix et localisation. Le champ décoratif, l’en-tête, la bannière et les catégories peuvent grandir ou se réorganiser sans hauteur de texte rigide.
-- Le corps de page ne plafonne pas l’agrandissement système. La navigation conserve le comportement Material de Flutter 3.38.5, qui limite ses libellés à un facteur 1,3 ; sa hauteur de 96 permet deux lignes sans rognage dans les scénarios testés.
+- Depuis KIBO-003.1, les annonces sont regroupées par rangées d’une ou deux colonnes selon la largeur et l’échelle du texte. Une illustration a une hauteur explicite calculée sur la largeur, bornée entre 140 et 180 px logiques ; le texte grandit naturellement, sans limite de lignes. `IntrinsicHeight` égalise les deux cartes d’une rangée ; son coût est limité aux quatre annonces fictives et devra être réévalué pour un futur flux réel. Le champ décoratif, l’en-tête, la bannière et les catégories peuvent aussi grandir.
+- `lib/core/widgets/kibo_bottom_navigation.dart` utilise les styles de navigation du thème et mesure les cinq libellés avec le `TextScaler` système, sans plafonnement. Les cellules ont la même largeur et la même hauteur, avec une zone tactile d’au moins 64×72 px. Lorsque cinq colonnes ne tiennent plus, les destinations sont réparties sur plusieurs rangées centrées, sans masquer ni tronquer leurs libellés. Les états sélectionnés et les actions existantes sont conservés.
 - Le démarrage Supabase, son service, sa configuration et ses paramètres de build ne sont pas modifiés. L’ajout au démarrage concerne uniquement l’enregistrement différé de la licence, sans réseau.
 
 ## Vérification et limites
+
+### Vérification initiale KIBO-003
 
 Les 13 tests précédents sont conservés sans modification. Onze tests s’ajoutent : assets et licence, thème réellement hérité, licence sans doublon, chargement/reconstruction sans seconde initialisation, six scénarios de rendu et erreur de configuration à texte agrandi.
 
@@ -33,3 +35,9 @@ Les tests responsive chargent les vrais TTF : 320×640 à facteurs 1, 2 et 3 ; 3
 Des aperçus locaux à 393×852 avec Manrope et Material Icons ont été générés puis inspectés, en haut de page et sur les cartes après défilement. Le banc d’essai et les PNG restent sous `.dart_tool/`, ignorés par Git. Ce contrôle ne remplace pas une revue physique sur TECNO : aucun nouveau déploiement sur téléphone ni test réel Supabase n’est effectué pour cette intégration visuelle. La connexion réelle réussie de KIBO-002 reste documentée séparément.
 
 Les commandes et résultats de validation sont consignés dans [PROGRESS.md](PROGRESS.md). Aucun thème sombre, contenu réel, schéma SQL, politique RLS, parcours d’authentification ou messagerie n’est ajouté.
+
+### Complément KIBO-003.1
+
+Les 24 tests de KIBO-003 sont conservés ; seules les assertions dépendant du composant Material remplacé sont adaptées. Six tests supplémentaires chargent les vrais TTF : quatre cas de navigation (320 et 360 px, texte 1 et 1,5) et deux cas pour les cartes (360 px, texte 1 et 1,5). Ils vérifient les libellés sur une ligne, l’échelle non plafonnée, la visibilité et l’alignement des destinations, les zones tactiles et leurs actions, les illustrations alignées et bornées, ainsi que l’accès aux quatre annonces. Résultat local : 30 tests réussis. Le contrôle physique reste distinct des tests automatisés ; ses résultats sont consignés dans `PROGRESS.md`.
+
+Version corrigée installée et inspectée sur TECNO CK6n / Android 14 le 2026-10-31, en portrait, à 100 % puis 150 %. Les trois défauts ciblés sont corrigés dans ces conditions ; les cinq destinations et quatre annonces restent accessibles. La navigation prend deux rangées à 150 %, sans couper « Recherche ». Taille de texte initiale restaurée à 100 %. Captures uniquement hors Git ; aucune clé réelle publiée.

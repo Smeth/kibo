@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:kibo/main.dart';
@@ -23,7 +23,12 @@ void main() {
     expect(find.text('KIBO'), findsOneWidget);
     expect(find.text('Le commerce, simplement.'), findsOneWidget);
     expect(find.text('Bienvenue sur KIBO !'), findsOneWidget);
-    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    expect(
+      tester
+          .widget<KiboBottomNavigation>(find.byType(KiboBottomNavigation))
+          .destinations,
+      hasLength(5),
+    );
     expect(tester.takeException(), isNull);
   });
 

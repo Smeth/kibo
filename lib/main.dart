@@ -4,6 +4,7 @@ import 'core/config/supabase_config.dart';
 import 'core/supabase/supabase_service.dart';
 import 'core/theme/kibo_colors.dart';
 import 'core/theme/kibo_theme.dart';
+import 'core/widgets/kibo_bottom_navigation.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -114,56 +115,72 @@ class _KiboHomePageState extends State<KiboHomePage> {
                       (constraints.crossAxisExtent - (columns - 1) * 12) /
                       columns;
                   final imageHeight = (cardWidth * 0.85)
-                      .clamp(120.0, 240.0)
+                      .clamp(140.0, 180.0)
                       .toDouble();
-                  // Réserve deux lignes par texte, sans plafonner l’échelle système.
-                  final cardHeight =
-                      imageHeight +
-                      48 +
-                      scaler.scale(14) * 3 +
-                      scaler.scale(16) * 3 +
-                      scaler.scale(12) * 3;
-                  return SliverGrid(
-                    delegate: SliverChildListDelegate([
-                      _buildProductCard(
-                        title: 'Smartphone Android',
-                        price: '85 000 FCFA',
-                        location: 'Poto-Poto, Brazzaville',
-                        icon: Icons.phone_android,
-                        color: const Color(0xFFE5F2EC),
-                        label: 'Téléphones',
-                      ),
-                      _buildProductCard(
-                        title: 'Canapé moderne',
-                        price: '150 000 FCFA',
-                        location: 'Bacongo, Brazzaville',
-                        icon: Icons.weekend_outlined,
-                        color: const Color(0xFFF4EBDD),
-                        label: 'Maison',
-                      ),
-                      _buildProductCard(
-                        title: 'Moto en bon état',
-                        price: '450 000 FCFA',
-                        location: 'Moungali, Brazzaville',
-                        icon: Icons.two_wheeler,
-                        color: const Color(0xFFE9EDF6),
-                        label: 'Véhicules',
-                      ),
-                      _buildProductCard(
-                        title: 'Appartement à louer',
-                        price: '120 000 FCFA / mois',
-                        location: 'Talangaï, Brazzaville',
-                        icon: Icons.apartment,
-                        color: const Color(0xFFF2E9E5),
-                        label: 'Immobilier',
-                      ),
-                    ]),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: columns,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 12,
-                      mainAxisExtent: cardHeight,
+                  final cards = [
+                    _buildProductCard(
+                      imageHeight: imageHeight,
+                      title: 'Smartphone Android',
+                      price: '85 000 FCFA',
+                      location: 'Poto-Poto, Brazzaville',
+                      icon: Icons.phone_android,
+                      color: const Color(0xFFE5F2EC),
+                      label: 'Téléphones',
                     ),
+                    _buildProductCard(
+                      imageHeight: imageHeight,
+                      title: 'Canapé moderne',
+                      price: '150 000 FCFA',
+                      location: 'Bacongo, Brazzaville',
+                      icon: Icons.weekend_outlined,
+                      color: const Color(0xFFF4EBDD),
+                      label: 'Maison',
+                    ),
+                    _buildProductCard(
+                      imageHeight: imageHeight,
+                      title: 'Moto en bon état',
+                      price: '450 000 FCFA',
+                      location: 'Moungali, Brazzaville',
+                      icon: Icons.two_wheeler,
+                      color: const Color(0xFFE9EDF6),
+                      label: 'Véhicules',
+                    ),
+                    _buildProductCard(
+                      imageHeight: imageHeight,
+                      title: 'Appartement à louer',
+                      price: '120 000 FCFA / mois',
+                      location: 'Talangaï, Brazzaville',
+                      icon: Icons.apartment,
+                      color: const Color(0xFFF2E9E5),
+                      label: 'Immobilier',
+                    ),
+                  ];
+                  return SliverList.list(
+                    children: [
+                      for (
+                        var start = 0;
+                        start < cards.length;
+                        start += columns
+                      )
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                for (
+                                  var offset = 0;
+                                  offset < columns;
+                                  offset++
+                                ) ...[
+                                  if (offset > 0) const SizedBox(width: 12),
+                                  Expanded(child: cards[start + offset]),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
@@ -390,6 +407,7 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }
 
   Widget _buildProductCard({
+    required double imageHeight,
     required String title,
     required String price,
     required String location,
@@ -399,11 +417,14 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }) {
     final text = Theme.of(context).textTheme;
     return Card(
+      key: ValueKey('listing-card-$title'),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
+          SizedBox(
+            key: ValueKey('listing-image-$title'),
+            height: imageHeight,
             child: Container(
               width: double.infinity,
               color: color,
@@ -467,17 +488,10 @@ class _KiboHomePageState extends State<KiboHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: text.titleSmall,
-                ),
+                Text(title, style: text.titleSmall),
                 const SizedBox(height: 8),
                 Text(
                   price,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                   style: text.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: KiboColors.primary,
@@ -494,8 +508,6 @@ class _KiboHomePageState extends State<KiboHomePage> {
                     Expanded(
                       child: Text(
                         location,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                         style: text.bodySmall?.copyWith(
                           color: KiboColors.textSecondary,
                         ),
@@ -512,7 +524,7 @@ class _KiboHomePageState extends State<KiboHomePage> {
   }
 
   Widget _buildBottomNavigation() {
-    return NavigationBar(
+    return KiboBottomNavigation(
       selectedIndex: selectedTab,
       onDestinationSelected: (index) {
         setState(() => selectedTab = index);

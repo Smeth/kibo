@@ -37,3 +37,7 @@ Un service injectable, créé au démarrage, mémorise l’initialisation et exp
 Polices statiques officielles 400/600/800 embarquées, sans package de chargement distant. Licence SIL OFL 1.1 conservée et enregistrée dans `LicenseRegistry`. Provenance et empreintes : [UI_THEME.md](UI_THEME.md).
 
 Palette et typographie centralisées dans `core/theme/`. L’accueil garde sa structure et ses interactions ; la grille adapte colonnes et hauteur à la largeur et au texte agrandi. Les styles ne nécessitent aucune modification de la configuration ou du service Supabase. La teinte claire de sélection et les fonds illustratifs existants sont préservés ; la navigation conserve les règles de mise à l’échelle de Flutter Material.
+
+## 2026-10-31 — Ajustements responsive (KIBO-003.1)
+
+Le contrôle réel sur TECNO a révélé un libellé de navigation coupé et des illustrations dont la hauteur dépendait indirectement du texte. Les illustrations reçoivent désormais une hauteur explicite bornée ; les rangées de cartes laissent grandir le texte au lieu de réserver un excédent absorbé par l’image. Une navigation ciblée conserve les styles et les cinq destinations, mais mesure les libellés avec l’échelle système complète et répartit les cellules sur plusieurs rangées lorsque nécessaire. Cette disposition privilégie des libellés entiers et tous visibles, sans réduction du texte, défilement horizontal ni changement de parcours. Aucun nouveau package ni modification de Supabase.
