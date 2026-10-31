@@ -1,7 +1,19 @@
--- KIBO-004: harden seller-controlled listing transitions and enforce the V1 image limit.
+-- KIBO-004: harden profile access, listing transitions, and listing image limits.
 -- Apply only after reviewing against the live project; this migration is not auto-applied.
 
 begin;
+
+-- The auth trigger invokes this function as its owner. Clients do not need
+-- direct EXECUTE permission on it.
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+-- RLS controls rows, not columns. Replace broad table grants with a public-safe
+-- column allowlist and a narrow authenticated profile-update allowlist.
+revoke all on table public.profiles from anon, authenticated;
+grant select (id, username, full_name, avatar_path, city, neighborhood, account_type, created_at)
+  on table public.profiles to anon, authenticated;
+grant update (username, full_name, avatar_path, bio, city, neighborhood, account_type)
+  on table public.profiles to authenticated;
 
 create or replace function public.guard_listing_owner_update()
 returns trigger
