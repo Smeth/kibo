@@ -1,3 +1,4 @@
+import 'support/listing_fake.dart';
 import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,12 +18,14 @@ void main() {
       config: testConfig,
       initializer: (_) async => client,
     );
-    await tester.pumpWidget(KiboApp(supabase: service));
+    await tester.pumpWidget(
+      KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('KIBO'), findsOneWidget);
-    expect(find.text('Le commerce, simplement.'), findsOneWidget);
-    expect(find.text('Bienvenue sur KIBO !'), findsOneWidget);
+    expect(find.byTooltip('Le commerce, simplement.'), findsOneWidget);
+    expect(find.text('Rechercher une annonce...'), findsOneWidget);
     expect(
       tester
           .widget<KiboBottomNavigation>(find.byType(KiboBottomNavigation))
@@ -41,7 +44,9 @@ void main() {
         throw StateError('Le SDK ne doit pas être appelé');
       },
     );
-    await tester.pumpWidget(KiboApp(supabase: service));
+    await tester.pumpWidget(
+      KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Configuration KIBO'), findsOneWidget);
     expect(find.textContaining('absente ou incomplète'), findsOneWidget);
@@ -55,7 +60,9 @@ void main() {
     final service = SupabaseService(
       config: SupabaseConfig(url: 'invalid', publicKey: testConfig.publicKey),
     );
-    await tester.pumpWidget(KiboApp(supabase: service));
+    await tester.pumpWidget(
+      KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('URL de projet HTTPS'), findsOneWidget);
     expect(find.byType(KiboHomePage), findsNothing);
@@ -67,7 +74,9 @@ void main() {
       config: testConfig,
       initializer: (_) async => throw Exception('valeur sensible'),
     );
-    await tester.pumpWidget(KiboApp(supabase: service));
+    await tester.pumpWidget(
+      KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('Impossible d’initialiser'), findsOneWidget);
     expect(find.textContaining('valeur sensible'), findsNothing);

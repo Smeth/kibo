@@ -1,5 +1,21 @@
 # Socle visuel KIBO — KIBO-003
 
+## Accueil rapproché de la référence, villes et dates — 2026-11-01
+
+En-tête compact avec recherche et ville, catégories à icônes, prix verts et métadonnées ville/ancienneté ; résultats et favoris en listes compactes. Sélecteur de villes/localités hors ligne partagé par les formulaires, en clair/sombre. [Détails et limites](REFERENCE_CITIES_DATES.md) ; [68 maquettes de 34 écrans/panneaux](../maquette/index.html). Aucune date substituée lorsque `published_at` manque.
+
+## Personnalisation claire/sombre et références — 2026-11-01
+
+La demande utilisateur ajoute le sombre, la connexion directement dans Profil et une fiche plus proche de la maquette. [Écrans, fichiers, tests et limites](VISUAL_PERSONALIZATION.md) ; [galerie de références](../maquette/README.md). `KiboTheme.light` et `.dark` partagent les dimensions et la typographie ; les composants suivent le `ColorScheme`. `AppearanceController` mémorise le choix local et le mode système reste le défaut. Les anciennes mentions « sombre ultérieur » ci-dessous décrivent les lots précédents.
+
+## Refonte Material 3 du 2026-11-01
+
+Voir [le périmètre, les fichiers, les mesures et limites](MATERIAL3_REDESIGN.md). Le nouveau socle explicite les surfaces de la charte et les thèmes des composants communs. Le catalogue utilise `SliverList.builder` sans `IntrinsicHeight` ; la note historique ci-dessous sur l’égalisation des cartes est dépassée. Les photos se décodent à la largeur du composant. Le thème clair et les cinq destinations adaptatives sont conservés.
+
+## Lot UI/UX du 2026-11-01
+
+Voir [UIUX_MARKETPLACE.md](UIUX_MARKETPLACE.md) pour le lot actuel : accueil/cartes, galerie et contacts, formulaire, accessibilité et icône KIBO. Le thème ajoute la même hauteur minimale 52 et le rayon 12 aux boutons OutlinedButton. Manrope, licence, palette, cinq destinations et taille de texte système sont conservés. Les sections ci-dessous décrivent l’historique du socle initial.
+
 ## Manrope locale et provenance
 
 Trois TTF statiques non modifiés sont embarqués, sans dépendance de chargement de police ni requête réseau : Regular 400, SemiBold 600 et ExtraBold 800. La famille Flutter déclarée dans `pubspec.yaml` est `Manrope`.

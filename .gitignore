@@ -2,6 +2,9 @@
 .env
 .env.*
 !.env.example
+# Parametres de build propres au poste (exemple fictif versionne separement).
+/config/*.local.json
+/config/*.local.json.*
 *.pem
 *.p12
 *.keystore
@@ -51,3 +54,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Supabase CLI cache (no remote project credentials in Git)
+/supabase/.temp/

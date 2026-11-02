@@ -6,6 +6,12 @@ on:
     paths:
       - 'lib/**'
       - 'test/**'
+      - 'assets/**'
+      - 'tool/**'
+      - 'scripts/**'
+      - 'supabase/**'
+      - 'config/*.example.json'
+      - 'config/supabase.public.json'
       - 'android/**'
       - 'ios/**'
       - 'pubspec.yaml'
@@ -17,6 +23,12 @@ on:
     paths:
       - 'lib/**'
       - 'test/**'
+      - 'assets/**'
+      - 'tool/**'
+      - 'scripts/**'
+      - 'supabase/**'
+      - 'config/*.example.json'
+      - 'config/supabase.public.json'
       - 'android/**'
       - 'ios/**'
       - 'pubspec.yaml'
@@ -34,8 +46,12 @@ concurrency:
 
 jobs:
   flutter-quality:
-    name: Flutter format, analyze and test
+    name: Flutter quality (photos=${{ matrix.photos }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        photos: [false, true]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,4 +76,17 @@ jobs:
         run: flutter analyze --fatal-infos
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --dart-define=KIBO_LISTING_PHOTOS_ENABLED=${{ matrix.photos }}
+
+  account-worker:
+    name: Account deletion worker fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run isolated worker tests
+        run: node --test test/audit/account_deletion_worker_test.mjs

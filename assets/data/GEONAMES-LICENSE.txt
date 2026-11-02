@@ -1,0 +1,14 @@
+Localités du Congo-Brazzaville (CG)
+Source : GeoNames, https://www.geonames.org/
+Extrait : https://download.geonames.org/export/dump/CG.zip
+Licence : Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+
+Adaptation KIBO du 2026-11-01 : conservation des lieux habités de classe P,
+hors quartiers explicitement typés PPLX et lieux abandonnés/détruits.
+Noms proches regroupés sans distinction de casse, accents ou séparateurs ;
+alias et identifiants conservés pour traçabilité. Pas de coordonnées embarquées.
+Ce catalogue comprend des villes et des localités rurales ; il n'est pas un
+classement administratif officiel ni une garantie d'exhaustivité géographique.
+Les noms homonymes sont regroupés, le modèle actuel stockant seulement la ville.
+GeoNames fournit ces données sans garantie de précision ou d'exhaustivité.

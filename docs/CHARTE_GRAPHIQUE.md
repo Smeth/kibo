@@ -35,4 +35,23 @@ Manrope : ExtraBold 800 pour logo et grands titres ; SemiBold 600 pour titres de
 - Icônes : 24 px.
 
 ## Principes UI
-Photos d'annonces dominantes ; espaces généreux ; hiérarchie claire ; ombres discrètes ; séparateurs subtils ; icônes cohérentes (Lucide ou équivalent). Prévoir les états chargement, vide, erreur et succès. Thème clair au lancement ; thème sombre ultérieur.
+Photos d'annonces dominantes ; espaces généreux ; hiérarchie claire ; ombres discrètes ; séparateurs subtils ; icônes cohérentes (Lucide ou équivalent). Prévoir les états chargement, vide, erreur et succès. Clair et sombre disponibles ; choix du téléphone par défaut, réglage local « Appareil / Clair / Sombre ».
+
+## Déclinaison sombre — demande utilisateur du 2026-11-01
+
+La palette claire ci-dessus est conservée. Les surfaces sombres sont des neutres teintés de vert ; l’accent est éclairci pour rester lisible. Rôles centralisés dans `KiboTheme.dark`, composants reliés au `ColorScheme`.
+
+| Rôle sombre | Couleur |
+|---|---|
+| Fond | #101A16 |
+| Surface | #18251F |
+| Texte principal | #E7F0EB |
+| Texte secondaire | #B0C0B6 |
+| Action/prix | #6DDCB2 |
+| Texte sur action | #003827 |
+| Conteneur principal | #173F30 |
+| Texte sur conteneur | #A8F2CF |
+| Bordure | #3A4E43 |
+| Erreur | #FFB4AB |
+
+Le choix est mémorisé sur l’appareil, séparément des sessions et comptes. Aucun réglage Android global n’est modifié. Les références d’écrans se trouvent dans [`maquette/`](../maquette/README.md).

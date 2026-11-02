@@ -1,6 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import '../config/supabase_config.dart';
+import '../config/auth_callback.dart';
+import 'secure_session_storage.dart';
+import '../diagnostics/photo_upload_diagnostics.dart';
 
 typedef SupabaseInitializer =
     Future<SupabaseClient> Function(SupabaseConfig config);
@@ -17,10 +21,16 @@ class SupabaseStartupResult {
 /// Aucun repository ni opération métier n’est créé ici.
 class SupabaseService {
   SupabaseService({required this.config, SupabaseInitializer? initializer})
-    : _initializer = initializer ?? _initializeSdk;
+    : _initializer = initializer;
 
   final SupabaseConfig config;
-  final SupabaseInitializer _initializer;
+  final SupabaseInitializer? _initializer;
+  SecureSessionStorage? _sessionStorage;
+
+  Future<void> clearPersistedSession() async {
+    await _sessionStorage?.removePersistedSession();
+  }
+
   Future<SupabaseStartupResult>? _startup;
   SupabaseClient? _client;
 
@@ -34,7 +44,7 @@ class SupabaseService {
     final error = config.validationError;
     if (error != null) return SupabaseStartupResult.failure(error);
     try {
-      _client = await _initializer(config);
+      _client = await (_initializer ?? _initializeSdk)(config);
       return const SupabaseStartupResult.ready();
     } catch (_) {
       // Ne jamais afficher ni journaliser une exception pouvant contenir une clé.
@@ -45,15 +55,25 @@ class SupabaseService {
     }
   }
 
-  static Future<SupabaseClient> _initializeSdk(SupabaseConfig config) async {
+  Future<SupabaseClient> _initializeSdk(SupabaseConfig config) async {
+    _sessionStorage = SecureSessionStorage(
+      projectHost: Uri.parse(config.url).host,
+    );
     final supabase = await Supabase.initialize(
       url: config.url,
       publishableKey: config.publicKey,
       debug: false,
-      authOptions: const FlutterAuthClientOptions(
-        autoRefreshToken: false,
-        detectSessionInUri: false,
-        persistSession: false,
+      httpClient: PhotoDiagnosticHttpClient(http.Client()),
+      authOptions: FlutterAuthClientOptions(
+        autoRefreshToken: true,
+        authFlowType: AuthFlowType.pkce,
+        pkceAsyncStorage: SecurePkceStorage(
+          projectHost: Uri.parse(config.url).host,
+        ),
+        detectSessionInUri: true,
+        detectSessionInUriPredicate: KiboAuthCallback.accepts,
+        persistSession: true,
+        localStorage: _sessionStorage,
       ),
     );
     return supabase.client;

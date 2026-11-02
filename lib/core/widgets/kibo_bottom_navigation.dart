@@ -21,6 +21,9 @@ class KiboBottomNavigation extends StatelessWidget {
     final scaler = MediaQuery.textScalerOf(context);
     return Material(
       color: theme.backgroundColor,
+      shape: Border(
+        top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
       child: SafeArea(
         top: false,
         child: LayoutBuilder(
@@ -81,6 +84,7 @@ class KiboBottomNavigation extends StatelessWidget {
     final theme = Theme.of(context).navigationBarTheme;
     final destination = destinations[index];
     final selected = index == selectedIndex;
+    final publish = destination.label == 'Publier';
     final states = <WidgetState>{if (selected) WidgetState.selected};
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -89,11 +93,20 @@ class KiboBottomNavigation extends StatelessWidget {
           width: 64,
           height: 32,
           decoration: BoxDecoration(
-            color: selected ? theme.indicatorColor : Colors.transparent,
+            color: publish
+                ? Theme.of(context).colorScheme.primary
+                : selected
+                ? theme.indicatorColor
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
           ),
           child: IconTheme(
-            data: theme.iconTheme!.resolve(states)!,
+            data: publish
+                ? IconThemeData(
+                    size: 24,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )
+                : theme.iconTheme!.resolve(states)!,
             child: selected
                 ? destination.selectedIcon ?? destination.icon
                 : destination.icon,

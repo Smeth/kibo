@@ -1,3 +1,4 @@
+import '../support/listing_fake.dart';
 import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'dart:convert';
 
@@ -61,7 +62,9 @@ void main() {
       config: testConfig,
       initializer: (_) async => client,
     );
-    await tester.pumpWidget(KiboApp(supabase: service));
+    await tester.pumpWidget(
+      KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+    );
     await tester.pumpAndSettle();
     final theme = Theme.of(tester.element(find.byType(KiboHomePage)));
     expect(theme.brightness, Brightness.light);
@@ -73,10 +76,7 @@ void main() {
       FontWeight.w800,
     );
     expect(
-      tester
-          .widget<Text>(find.text('Explorer les catégories'))
-          .style
-          ?.fontWeight,
+      tester.widget<Text>(find.text('Annonces récentes')).style?.fontWeight,
       FontWeight.w600,
     );
     expect(theme.textTheme.bodySmall?.fontSize, greaterThanOrEqualTo(12));

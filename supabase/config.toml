@@ -1,0 +1,6 @@
+# Configuration du validateur deploye via Dashboard le 2026-11-01.
+project_id = "kibo"
+
+[functions.kibo-upload-listing-photo]
+verify_jwt = true
+entrypoint = "./functions/kibo-upload-listing-photo/index.ts"

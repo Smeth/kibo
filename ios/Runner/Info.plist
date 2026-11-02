@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choisir jusqu’à trois photos pour votre annonce KIBO.</string>
 </dict>
 </plist>

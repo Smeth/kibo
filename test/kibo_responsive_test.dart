@@ -1,3 +1,4 @@
+import 'support/listing_fake.dart';
 import 'package:kibo/core/widgets/kibo_bottom_navigation.dart';
 import 'dart:async';
 
@@ -29,9 +30,13 @@ void main() {
           return startup.future;
         },
       );
-      await tester.pumpWidget(KiboApp(supabase: service));
+      await tester.pumpWidget(
+        KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+      );
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      await tester.pumpWidget(KiboApp(supabase: service));
+      await tester.pumpWidget(
+        KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+      );
       expect(calls, 1);
       startup.complete(client);
       await tester.pumpAndSettle();
@@ -64,7 +69,13 @@ void main() {
           config: testConfig,
           initializer: (_) async => client,
         );
-        await tester.pumpWidget(KiboApp(supabase: service));
+        await tester.pumpWidget(
+          KiboApp(
+            supabase: service,
+            listingRepository: FakeListingRepository(),
+            favoritesRepository: FakeFavoritesRepository(),
+          ),
+        );
         await tester.pumpAndSettle();
         expect(find.text('KIBO'), findsOneWidget);
         final navigationBounds = tester.getRect(
@@ -94,7 +105,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('Appartement à louer'), findsOneWidget);
-        expect(find.text('120 000 FCFA / mois'), findsOneWidget);
+        expect(find.text('120 000 XAF'), findsOneWidget);
         expect(tester.takeException(), isNull);
         await tester.tap(find.text('Profil'));
         await tester.pumpAndSettle();
@@ -126,7 +137,9 @@ void main() {
           throw StateError('Ne doit pas être appelé');
         },
       );
-      await tester.pumpWidget(KiboApp(supabase: service));
+      await tester.pumpWidget(
+        KiboApp(supabase: service, listingRepository: FakeListingRepository()),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Configuration KIBO'), findsOneWidget);
       expect(find.textContaining('absente ou incomplète'), findsOneWidget);

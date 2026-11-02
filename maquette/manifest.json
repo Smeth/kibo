@@ -1,0 +1,478 @@
+{
+  "viewport": {
+    "width": 393,
+    "height": 852,
+    "pixelRatio": 2
+  },
+  "fixture": true,
+  "screens": [
+    {
+      "id": "01-accueil",
+      "title": "Accueil",
+      "mode": "clair",
+      "path": "clair/01-accueil.png"
+    },
+    {
+      "id": "02-recherche",
+      "title": "Recherche",
+      "mode": "clair",
+      "path": "clair/02-recherche.png"
+    },
+    {
+      "id": "03-filtres",
+      "title": "Filtres et tri",
+      "mode": "clair",
+      "path": "clair/03-filtres.png"
+    },
+    {
+      "id": "04-detail",
+      "title": "Détail de l’annonce",
+      "mode": "clair",
+      "path": "clair/04-detail.png"
+    },
+    {
+      "id": "05-favoris",
+      "title": "Favoris",
+      "mode": "clair",
+      "path": "clair/05-favoris.png"
+    },
+    {
+      "id": "06-profil",
+      "title": "Profil connecté",
+      "mode": "clair",
+      "path": "clair/06-profil.png"
+    },
+    {
+      "id": "07-connexion-directe",
+      "title": "Profil : connexion directe",
+      "mode": "clair",
+      "path": "clair/07-connexion-directe.png"
+    },
+    {
+      "id": "08-inscription",
+      "title": "Inscription",
+      "mode": "clair",
+      "path": "clair/08-inscription.png"
+    },
+    {
+      "id": "09-publication",
+      "title": "Publier une annonce",
+      "mode": "clair",
+      "path": "clair/09-publication.png"
+    },
+    {
+      "id": "10-photos",
+      "title": "Photos de l’annonce",
+      "mode": "clair",
+      "path": "clair/10-photos.png"
+    },
+    {
+      "id": "11-mes-annonces",
+      "title": "Mes annonces",
+      "mode": "clair",
+      "path": "clair/11-mes-annonces.png"
+    },
+    {
+      "id": "12-modifier-annonce",
+      "title": "Modifier une annonce",
+      "mode": "clair",
+      "path": "clair/12-modifier-annonce.png"
+    },
+    {
+      "id": "13-messages",
+      "title": "Conversations",
+      "mode": "clair",
+      "path": "clair/13-messages.png"
+    },
+    {
+      "id": "14-messages-vides",
+      "title": "Messages : état vide",
+      "mode": "clair",
+      "path": "clair/14-messages-vides.png"
+    },
+    {
+      "id": "15-conversation",
+      "title": "Conversation",
+      "mode": "clair",
+      "path": "clair/15-conversation.png"
+    },
+    {
+      "id": "16-notifications",
+      "title": "Notifications",
+      "mode": "clair",
+      "path": "clair/16-notifications.png"
+    },
+    {
+      "id": "17-signalement",
+      "title": "Signaler un contenu",
+      "mode": "clair",
+      "path": "clair/17-signalement.png"
+    },
+    {
+      "id": "18-moderation",
+      "title": "Modération",
+      "mode": "clair",
+      "path": "clair/18-moderation.png"
+    },
+    {
+      "id": "19-commentaires",
+      "title": "Commentaires",
+      "mode": "clair",
+      "path": "clair/19-commentaires.png"
+    },
+    {
+      "id": "20-reponses",
+      "title": "Réponses",
+      "mode": "clair",
+      "path": "clair/20-reponses.png"
+    },
+    {
+      "id": "21-vendeur",
+      "title": "Profil du vendeur",
+      "mode": "clair",
+      "path": "clair/21-vendeur.png"
+    },
+    {
+      "id": "22-coordonnees",
+      "title": "Coordonnées de contact",
+      "mode": "clair",
+      "path": "clair/22-coordonnees.png"
+    },
+    {
+      "id": "23-modifier-profil",
+      "title": "Modifier le profil",
+      "mode": "clair",
+      "path": "clair/23-modifier-profil.png"
+    },
+    {
+      "id": "24-mot-de-passe-oublie",
+      "title": "Mot de passe oublié",
+      "mode": "clair",
+      "path": "clair/24-mot-de-passe-oublie.png"
+    },
+    {
+      "id": "25-changer-mot-de-passe",
+      "title": "Changer le mot de passe",
+      "mode": "clair",
+      "path": "clair/25-changer-mot-de-passe.png"
+    },
+    {
+      "id": "26-compte",
+      "title": "Compte et données",
+      "mode": "clair",
+      "path": "clair/26-compte.png"
+    },
+    {
+      "id": "27-bloques",
+      "title": "Interlocuteurs bloqués",
+      "mode": "clair",
+      "path": "clair/27-bloques.png"
+    },
+    {
+      "id": "28-preferences",
+      "title": "Préférences de notifications",
+      "mode": "clair",
+      "path": "clair/28-preferences.png"
+    },
+    {
+      "id": "29-suivi-demande",
+      "title": "Suivi des demandes de compte",
+      "mode": "clair",
+      "path": "clair/29-suivi-demande.png"
+    },
+    {
+      "id": "30-connexion-route",
+      "title": "Connexion depuis une action protégée",
+      "mode": "clair",
+      "path": "clair/30-connexion-route.png"
+    },
+    {
+      "id": "31-apercu-publication",
+      "title": "Aperçu avant publication",
+      "mode": "clair",
+      "path": "clair/31-apercu-publication.png"
+    },
+    {
+      "id": "32-apparence",
+      "title": "Choix de l’apparence",
+      "mode": "clair",
+      "path": "clair/32-apparence.png"
+    },
+    {
+      "id": "33-erreur-catalogue",
+      "title": "Catalogue indisponible",
+      "mode": "clair",
+      "path": "clair/33-erreur-catalogue.png"
+    },
+    {
+      "id": "34-villes-congo",
+      "title": "Sélection des villes du Congo",
+      "mode": "clair",
+      "path": "clair/34-villes-congo.png"
+    },
+    {
+      "id": "35-retirer-annonce",
+      "title": "Retirer une annonce du catalogue",
+      "mode": "clair",
+      "path": "clair/35-retirer-annonce.png"
+    },
+    {
+      "id": "36-modifier-message",
+      "title": "Modifier son message (contrat préparé)",
+      "mode": "clair",
+      "path": "clair/36-modifier-message.png"
+    },
+    {
+      "id": "37-supprimer-message",
+      "title": "Supprimer son message (contrat préparé)",
+      "mode": "clair",
+      "path": "clair/37-supprimer-message.png"
+    },
+    {
+      "id": "38-annonce-sans-photo",
+      "title": "Modifier une annonce sans photo",
+      "mode": "clair",
+      "path": "clair/38-annonce-sans-photo.png"
+    },
+    {
+      "id": "39-appui-long-message",
+      "title": "Actions par appui long",
+      "mode": "clair",
+      "path": "clair/39-appui-long-message.png"
+    },
+    {
+      "id": "01-accueil",
+      "title": "Accueil",
+      "mode": "sombre",
+      "path": "sombre/01-accueil.png"
+    },
+    {
+      "id": "02-recherche",
+      "title": "Recherche",
+      "mode": "sombre",
+      "path": "sombre/02-recherche.png"
+    },
+    {
+      "id": "03-filtres",
+      "title": "Filtres et tri",
+      "mode": "sombre",
+      "path": "sombre/03-filtres.png"
+    },
+    {
+      "id": "04-detail",
+      "title": "Détail de l’annonce",
+      "mode": "sombre",
+      "path": "sombre/04-detail.png"
+    },
+    {
+      "id": "05-favoris",
+      "title": "Favoris",
+      "mode": "sombre",
+      "path": "sombre/05-favoris.png"
+    },
+    {
+      "id": "06-profil",
+      "title": "Profil connecté",
+      "mode": "sombre",
+      "path": "sombre/06-profil.png"
+    },
+    {
+      "id": "07-connexion-directe",
+      "title": "Profil : connexion directe",
+      "mode": "sombre",
+      "path": "sombre/07-connexion-directe.png"
+    },
+    {
+      "id": "08-inscription",
+      "title": "Inscription",
+      "mode": "sombre",
+      "path": "sombre/08-inscription.png"
+    },
+    {
+      "id": "09-publication",
+      "title": "Publier une annonce",
+      "mode": "sombre",
+      "path": "sombre/09-publication.png"
+    },
+    {
+      "id": "10-photos",
+      "title": "Photos de l’annonce",
+      "mode": "sombre",
+      "path": "sombre/10-photos.png"
+    },
+    {
+      "id": "11-mes-annonces",
+      "title": "Mes annonces",
+      "mode": "sombre",
+      "path": "sombre/11-mes-annonces.png"
+    },
+    {
+      "id": "12-modifier-annonce",
+      "title": "Modifier une annonce",
+      "mode": "sombre",
+      "path": "sombre/12-modifier-annonce.png"
+    },
+    {
+      "id": "13-messages",
+      "title": "Conversations",
+      "mode": "sombre",
+      "path": "sombre/13-messages.png"
+    },
+    {
+      "id": "14-messages-vides",
+      "title": "Messages : état vide",
+      "mode": "sombre",
+      "path": "sombre/14-messages-vides.png"
+    },
+    {
+      "id": "15-conversation",
+      "title": "Conversation",
+      "mode": "sombre",
+      "path": "sombre/15-conversation.png"
+    },
+    {
+      "id": "16-notifications",
+      "title": "Notifications",
+      "mode": "sombre",
+      "path": "sombre/16-notifications.png"
+    },
+    {
+      "id": "17-signalement",
+      "title": "Signaler un contenu",
+      "mode": "sombre",
+      "path": "sombre/17-signalement.png"
+    },
+    {
+      "id": "18-moderation",
+      "title": "Modération",
+      "mode": "sombre",
+      "path": "sombre/18-moderation.png"
+    },
+    {
+      "id": "19-commentaires",
+      "title": "Commentaires",
+      "mode": "sombre",
+      "path": "sombre/19-commentaires.png"
+    },
+    {
+      "id": "20-reponses",
+      "title": "Réponses",
+      "mode": "sombre",
+      "path": "sombre/20-reponses.png"
+    },
+    {
+      "id": "21-vendeur",
+      "title": "Profil du vendeur",
+      "mode": "sombre",
+      "path": "sombre/21-vendeur.png"
+    },
+    {
+      "id": "22-coordonnees",
+      "title": "Coordonnées de contact",
+      "mode": "sombre",
+      "path": "sombre/22-coordonnees.png"
+    },
+    {
+      "id": "23-modifier-profil",
+      "title": "Modifier le profil",
+      "mode": "sombre",
+      "path": "sombre/23-modifier-profil.png"
+    },
+    {
+      "id": "24-mot-de-passe-oublie",
+      "title": "Mot de passe oublié",
+      "mode": "sombre",
+      "path": "sombre/24-mot-de-passe-oublie.png"
+    },
+    {
+      "id": "25-changer-mot-de-passe",
+      "title": "Changer le mot de passe",
+      "mode": "sombre",
+      "path": "sombre/25-changer-mot-de-passe.png"
+    },
+    {
+      "id": "26-compte",
+      "title": "Compte et données",
+      "mode": "sombre",
+      "path": "sombre/26-compte.png"
+    },
+    {
+      "id": "27-bloques",
+      "title": "Interlocuteurs bloqués",
+      "mode": "sombre",
+      "path": "sombre/27-bloques.png"
+    },
+    {
+      "id": "28-preferences",
+      "title": "Préférences de notifications",
+      "mode": "sombre",
+      "path": "sombre/28-preferences.png"
+    },
+    {
+      "id": "29-suivi-demande",
+      "title": "Suivi des demandes de compte",
+      "mode": "sombre",
+      "path": "sombre/29-suivi-demande.png"
+    },
+    {
+      "id": "30-connexion-route",
+      "title": "Connexion depuis une action protégée",
+      "mode": "sombre",
+      "path": "sombre/30-connexion-route.png"
+    },
+    {
+      "id": "31-apercu-publication",
+      "title": "Aperçu avant publication",
+      "mode": "sombre",
+      "path": "sombre/31-apercu-publication.png"
+    },
+    {
+      "id": "32-apparence",
+      "title": "Choix de l’apparence",
+      "mode": "sombre",
+      "path": "sombre/32-apparence.png"
+    },
+    {
+      "id": "33-erreur-catalogue",
+      "title": "Catalogue indisponible",
+      "mode": "sombre",
+      "path": "sombre/33-erreur-catalogue.png"
+    },
+    {
+      "id": "34-villes-congo",
+      "title": "Sélection des villes du Congo",
+      "mode": "sombre",
+      "path": "sombre/34-villes-congo.png"
+    },
+    {
+      "id": "35-retirer-annonce",
+      "title": "Retirer une annonce du catalogue",
+      "mode": "sombre",
+      "path": "sombre/35-retirer-annonce.png"
+    },
+    {
+      "id": "36-modifier-message",
+      "title": "Modifier son message (contrat préparé)",
+      "mode": "sombre",
+      "path": "sombre/36-modifier-message.png"
+    },
+    {
+      "id": "37-supprimer-message",
+      "title": "Supprimer son message (contrat préparé)",
+      "mode": "sombre",
+      "path": "sombre/37-supprimer-message.png"
+    },
+    {
+      "id": "38-annonce-sans-photo",
+      "title": "Modifier une annonce sans photo",
+      "mode": "sombre",
+      "path": "sombre/38-annonce-sans-photo.png"
+    },
+    {
+      "id": "39-appui-long-message",
+      "title": "Actions par appui long",
+      "mode": "sombre",
+      "path": "sombre/39-appui-long-message.png"
+    }
+  ]
+}

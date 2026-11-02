@@ -1,3 +1,4 @@
+import 'support/listing_fake.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,7 @@ import 'package:kibo/main.dart';
 
 import 'support/manrope_fonts.dart';
 import 'support/supabase_fakes.dart';
+import 'support/guest_favorites_fake.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -109,7 +111,7 @@ void main() {
           findsOneWidget,
         );
         final titleText = tester.widget<Text>(find.text(title));
-        expect(titleText.maxLines, isNull);
+        expect(titleText.maxLines, 2);
         expect(tester.takeException(), isNull);
       }
       if (scale == 1) {
@@ -131,7 +133,7 @@ void main() {
         expect(first.bottom, closeTo(second.bottom, 0.01));
       }
       expect(images.map((image) => image.height).toSet(), hasLength(1));
-      expect(find.text('120 000 FCFA / mois'), findsOneWidget);
+      expect(find.text('120 000 XAF'), findsOneWidget);
     });
   }
 }
@@ -147,6 +149,9 @@ Future<void> pumpHome(WidgetTester tester, double width, double scale) async {
   addTearDown(client.dispose);
   await tester.pumpWidget(
     KiboApp(
+      listingRepository: FakeListingRepository(),
+      favoritesRepository: FakeFavoritesRepository(),
+      guestFavoritesStore: MemoryGuestFavoritesStore(),
       supabase: SupabaseService(
         config: testConfig,
         initializer: (_) async => client,
