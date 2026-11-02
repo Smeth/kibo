@@ -32,7 +32,7 @@ class KiboFormListView extends StatelessWidget {
   const KiboFormListView({
     super.key,
     required this.children,
-    this.padding = const EdgeInsets.all(24),
+    this.padding = const EdgeInsets.all(16),
     this.onRefresh,
   });
   final List<Widget> children;
@@ -46,8 +46,11 @@ class KiboFormListView extends StatelessWidget {
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: _spaced(children, 16),
     );
-    return onRefresh == null
-        ? list
-        : RefreshIndicator(onRefresh: onRefresh!, child: list);
+    return SafeArea(
+      top: false,
+      child: onRefresh == null
+          ? list
+          : RefreshIndicator(onRefresh: onRefresh!, child: list),
+    );
   }
 }

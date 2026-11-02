@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/auth_controller.dart';
@@ -22,7 +23,7 @@ class MyListingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final owner = AuthScope.maybeOf(context)?.identity?.id;
     return Scaffold(
-      appBar: AppBar(title: const Text('Mes annonces')),
+      appBar: KiboAppBar(context, title: const Text('Mes annonces')),
       body: owner == null
           ? const Center(child: Text('Connectez-vous pour gérer vos annonces.'))
           : _OwnedFeed(

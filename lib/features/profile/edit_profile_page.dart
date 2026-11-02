@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import '../../core/widgets/congo_city_field.dart';
@@ -54,7 +55,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return PopScope(
         canPop: !busy,
         child: Scaffold(
-          appBar: AppBar(title: const Text('Modifier mon profil')),
+          appBar: KiboAppBar(context, title: const Text('Modifier mon profil')),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),

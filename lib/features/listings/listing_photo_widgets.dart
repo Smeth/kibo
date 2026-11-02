@@ -20,7 +20,13 @@ class ListingPhotoScope extends InheritedWidget {
 }
 
 class ListingPhotoView extends StatefulWidget {
-  const ListingPhotoView({super.key, required this.path, required this.label});
+  const ListingPhotoView({
+    super.key,
+    required this.path,
+    required this.label,
+    this.fit = BoxFit.cover,
+  });
+  final BoxFit fit;
   final String path, label;
   @override
   State<ListingPhotoView> createState() => _ListingPhotoViewState();
@@ -103,7 +109,7 @@ class _ListingPhotoViewState extends State<ListingPhotoView> {
             return Image.memory(
               data,
               cacheWidth: width,
-              fit: BoxFit.cover,
+              fit: widget.fit,
               width: double.infinity,
               semanticLabel: widget.label,
               errorBuilder: (context, error, stack) => _retry(),
@@ -112,7 +118,7 @@ class _ListingPhotoViewState extends State<ListingPhotoView> {
           return Image.network(
             data as String,
             cacheWidth: width,
-            fit: BoxFit.cover,
+            fit: widget.fit,
             width: double.infinity,
             semanticLabel: widget.label,
             loadingBuilder: (context, child, progress) => progress == null

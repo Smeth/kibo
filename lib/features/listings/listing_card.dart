@@ -160,25 +160,48 @@ class ListingCard extends StatelessWidget {
       child: InkWell(
         onTap: onOpen,
         child: compact
-            ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: SizedBox(
-                        key: ValueKey('listing-image-${listing.title}'),
-                        width: 80,
-                        height: 88,
-                        child: _photo(context),
-                      ),
+            ? LayoutBuilder(
+                builder: (context, constraints) {
+                  final stacked =
+                      constraints.maxWidth < 360 &&
+                      MediaQuery.textScalerOf(context).scale(14) > 21;
+                  final image = ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      key: ValueKey('listing-image-${listing.title}'),
+                      width: 80,
+                      height: 88,
+                      child: _photo(context),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(child: _summary(context)),
-                    FavoriteButton(listingId: listing.id),
-                  ],
-                ),
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: stacked
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  image,
+                                  const Spacer(),
+                                  FavoriteButton(listingId: listing.id),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              _summary(context),
+                            ],
+                          )
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              image,
+                              const SizedBox(width: 12),
+                              Expanded(child: _summary(context)),
+                              FavoriteButton(listingId: listing.id),
+                            ],
+                          ),
+                  );
+                },
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

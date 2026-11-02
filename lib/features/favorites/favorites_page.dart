@@ -73,111 +73,115 @@ class _FavoritesPageState extends State<FavoritesPage> {
         itemCount: items.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return KiboFormColumn(
-              children: [
-                if (controller.loading || guest?.loading == true)
-                  const LinearProgressIndicator(),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        guest == null
-                            ? 'Mes favoris'
-                            : 'Favoris sur ce téléphone',
-                        style: Theme.of(context).textTheme.headlineSmall,
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: KiboFormColumn(
+                children: [
+                  if (controller.loading || guest?.loading == true)
+                    const LinearProgressIndicator(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          guest == null
+                              ? 'Mes favoris'
+                              : 'Favoris sur ce téléphone',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Actualiser les favoris',
+                        onPressed: busy ? null : refresh,
+                        icon: const Icon(Icons.refresh),
+                      ),
+                    ],
+                  ),
+                  if (guest != null)
+                    const Text(
+                      'Enregistrés sur cet appareil. Connectez-vous depuis Profil pour les transférer vers votre compte.',
+                    ),
+                  if (controller.offersTransfer)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: KiboFormColumn(
+                          children: [
+                            Text(
+                              '${controller.guest!.ids.length} favori(s) de ce téléphone peuvent être ajoutés à votre compte.',
+                            ),
+                            FilledButton(
+                              onPressed:
+                                  controller.busy || controller.guest!.busy
+                                  ? null
+                                  : () async {
+                                      final owner = controller.owner!;
+                                      final revision =
+                                          controller.sessionRevision;
+                                      final confirmed = await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text(
+                                            'Ajouter au compte connecté ?',
+                                          ),
+                                          content: const Text(
+                                            'Les favoris de ce téléphone seront ajoutés à ce compte sans remplacer ses favoris existants. Seuls les éléments confirmés seront retirés de la sélection locale.',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                              child: const Text('Annuler'),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                              child: const Text(
+                                                'Confirmer le transfert',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                      if (confirmed == true) {
+                                        await controller.importGuestFavorites(
+                                          expectedOwner: owner,
+                                          expectedRevision: revision,
+                                        );
+                                      }
+                                    },
+                              child: Text(
+                                controller.importing
+                                    ? 'Transfert…'
+                                    : 'Ajouter à mon compte',
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: controller.busy
+                                  ? null
+                                  : controller.dismissTransfer,
+                              child: const Text('Plus tard'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Actualiser les favoris',
+                  if (error != null) ...[
+                    Text(error),
+                    TextButton(
                       onPressed: busy ? null : refresh,
-                      icon: const Icon(Icons.refresh),
+                      child: const Text('Réessayer'),
                     ),
                   ],
-                ),
-                if (guest != null)
-                  const Text(
-                    'Enregistrés sur cet appareil. Connectez-vous depuis Profil pour les transférer vers votre compte.',
-                  ),
-                if (controller.offersTransfer)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            '${controller.guest!.ids.length} favori(s) de ce téléphone peuvent être ajoutés à votre compte.',
-                          ),
-                          FilledButton(
-                            onPressed: controller.busy || controller.guest!.busy
-                                ? null
-                                : () async {
-                                    final owner = controller.owner!;
-                                    final revision = controller.sessionRevision;
-                                    final confirmed = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text(
-                                          'Ajouter au compte connecté ?',
-                                        ),
-                                        content: const Text(
-                                          'Les favoris de ce téléphone seront ajoutés à ce compte sans remplacer ses favoris existants. Seuls les éléments confirmés seront retirés de la sélection locale.',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, false),
-                                            child: const Text('Annuler'),
-                                          ),
-                                          FilledButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, true),
-                                            child: const Text(
-                                              'Confirmer le transfert',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (confirmed == true) {
-                                      await controller.importGuestFavorites(
-                                        expectedOwner: owner,
-                                        expectedRevision: revision,
-                                      );
-                                    }
-                                  },
-                            child: Text(
-                              controller.importing
-                                  ? 'Transfert…'
-                                  : 'Ajouter à mon compte',
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: controller.busy
-                                ? null
-                                : controller.dismissTransfer,
-                            child: const Text('Plus tard'),
-                          ),
-                        ],
-                      ),
+                  if (items.isEmpty && error == null)
+                    const KiboStatePanel(
+                      icon: Icons.favorite_border,
+                      title:
+                          'Aucun favori disponible. Les annonces retirées du public ne sont pas affichées.',
+                      message:
+                          'Touchez le cœur d’une annonce pour la retrouver ici.',
                     ),
-                  ),
-                if (error != null) ...[
-                  Text(error),
-                  TextButton(
-                    onPressed: busy ? null : refresh,
-                    child: const Text('Réessayer'),
-                  ),
                 ],
-                if (items.isEmpty && error == null)
-                  const KiboStatePanel(
-                    icon: Icons.favorite_border,
-                    title:
-                        'Aucun favori disponible. Les annonces retirées du public ne sont pas affichées.',
-                    message:
-                        'Touchez le cœur d’une annonce pour la retrouver ici.',
-                  ),
-              ],
+              ),
             );
           }
           if (index <= items.length) {

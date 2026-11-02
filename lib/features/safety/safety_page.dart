@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
@@ -270,7 +271,8 @@ class _SafetyPageState extends State<SafetyPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(
+      appBar: KiboAppBar(
+        context,
         title: Text(switch (widget.screen) {
           SafetyScreen.notifications => 'Notifications',
           SafetyScreen.report => 'Signaler un contenu',

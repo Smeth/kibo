@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../trust/official_badge.dart';
 import '../trust/report_target_page.dart';
@@ -117,7 +118,8 @@ class _SellerPageState extends State<SellerPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
+    appBar: KiboAppBar(
+      context,
       title: const Text('Profil du vendeur'),
       actions: [
         if (TrustScope.maybeClient(context) != null &&

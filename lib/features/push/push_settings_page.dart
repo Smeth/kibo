@@ -1,3 +1,6 @@
+import '../../core/widgets/kibo_app_bar.dart';
+import '../../core/widgets/kibo_form_layout.dart';
+import '../../core/widgets/kibo_state_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'push_registration.dart';
@@ -51,8 +54,11 @@ class _PushSettingsPageState extends State<PushSettingsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Notifications sur ce téléphone')),
-    body: ListView(
+    appBar: KiboAppBar(
+      context,
+      title: const Text('Notifications sur ce téléphone'),
+    ),
+    body: KiboFormListView(
       padding: const EdgeInsets.all(16),
       children: [
         const Text(
@@ -62,9 +68,12 @@ class _PushSettingsPageState extends State<PushSettingsPage> {
         ),
         const SizedBox(height: 16),
         if (!pushConfigured)
-          const Text(
-            'Les alertes Android sont en préparation. '
-            'Vos notifications restent disponibles dans KIBO.',
+          const KiboStatePanel(
+            icon: Icons.notifications_paused_outlined,
+            title: 'Alertes Android bientôt disponibles',
+            message:
+                'Les alertes Android sont en préparation. '
+                'Vos notifications restent disponibles dans KIBO.',
           )
         else ...[
           FilledButton(

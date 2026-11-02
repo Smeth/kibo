@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/congo_city_field.dart';
 
@@ -262,7 +263,7 @@ class _EditListingPageState extends State<EditListingPage> {
     return PopScope(
       canPop: !_busy && !_picking,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Modifier mon annonce')),
+        appBar: KiboAppBar(context, title: const Text('Modifier mon annonce')),
         body: !current
             ? const Center(
                 child: Text(

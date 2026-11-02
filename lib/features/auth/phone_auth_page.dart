@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -88,10 +89,13 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
       return PopScope(
         canPop: !busy || widget.auth.identity != null,
         child: Scaffold(
-          appBar: AppBar(title: const Text('Connexion par téléphone')),
+          appBar: KiboAppBar(
+            context,
+            title: const Text('Connexion par téléphone'),
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 480),

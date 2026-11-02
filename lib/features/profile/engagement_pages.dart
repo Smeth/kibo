@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import '../auth/auth_controller.dart';
@@ -295,7 +296,8 @@ class _EngagementPageState extends State<EngagementPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(
+      appBar: KiboAppBar(
+        context,
         title: Text(
           widget.preferences
               ? 'Préférences de notifications'
@@ -310,7 +312,7 @@ class _EngagementPageState extends State<EngagementPage> {
               onRefresh: () async {
                 if (!_busy && !_loading) await _load();
               },
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               children: [
                 if (_loading) const LinearProgressIndicator(),
                 if (_error != null)
@@ -322,6 +324,7 @@ class _EngagementPageState extends State<EngagementPage> {
                     'Ces choix concernent les futures notifications dans KIBO, sur tous vos appareils connectés. Les messages et commentaires restent accessibles. Les notifications de sécurité et de traitement du compte restent actives. Les notifications système du téléphone ne sont pas encore disponibles.',
                   ),
                   SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     title: const Text('Nouveaux messages'),
                     value: _messages,
                     onChanged: !_loaded || _loading || _busy
@@ -332,6 +335,7 @@ class _EngagementPageState extends State<EngagementPage> {
                           }),
                   ),
                   SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     title: const Text('Commentaires et réponses'),
                     value: _comments,
                     onChanged: !_loaded || _loading || _busy

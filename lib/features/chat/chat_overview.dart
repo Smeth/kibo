@@ -164,6 +164,15 @@ class _ChatEntryState extends State<ChatEntry> with WidgetsBindingObserver {
       child: !widget.showLabel
           ? IconButton(
               onPressed: widget.onPressed,
+              padding: EdgeInsets.fromLTRB(
+                12,
+                12,
+                12 +
+                    ((_count ?? 0) > 0
+                        ? MediaQuery.textScalerOf(context).scale(12)
+                        : 0),
+                12,
+              ),
               icon: Badge(
                 isLabelVisible: (_count ?? 0) > 0,
                 label: Text((_count ?? 0) > 99 ? '99+' : '$_count'),

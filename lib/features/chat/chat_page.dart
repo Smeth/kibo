@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 import '../trust/report_target_page.dart';
 import '../trust/trust_scope.dart';
@@ -496,7 +497,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) => PopScope(
     canPop: !_sending && !_mutating,
     child: Scaffold(
-      appBar: AppBar(
+      appBar: KiboAppBar(
+        context,
         title: Text(_conversation ? 'Conversation' : 'Mes messages'),
         actions: [
           if (_thread != null &&

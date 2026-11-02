@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import 'auth_controller.dart';
@@ -48,9 +49,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Mot de passe oublié')),
+    appBar: KiboAppBar(context, title: const Text('Mot de passe oublié')),
     body: KiboFormListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       children: [
         const Text(
           'Indiquez votre adresse email. Ne partagez jamais le lien reçu ni votre code de confirmation.',
@@ -161,13 +162,13 @@ class _PasswordChangePageState extends State<PasswordChangePage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(title: const Text('Nouveau mot de passe')),
+      appBar: KiboAppBar(context, title: const Text('Nouveau mot de passe')),
       body: _invalid
           ? const Center(
               child: Text('Session modifiée. Revenez depuis Profil.'),
             )
           : KiboFormListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               children: [
                 Form(
                   key: _form,

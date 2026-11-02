@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import 'package:flutter/services.dart';
@@ -369,7 +370,8 @@ class _AuthPageState extends State<AuthPage> {
       return widget.embedded
           ? body
           : Scaffold(
-              appBar: AppBar(
+              appBar: KiboAppBar(
+                context,
                 title: Text(_registration ? 'Créer mon compte' : 'Connexion'),
               ),
               body: body,

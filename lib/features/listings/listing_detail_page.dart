@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/publication_age.dart';
 import '../../core/widgets/kibo_state_panel.dart';
@@ -55,7 +56,8 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
   });
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
+    appBar: KiboAppBar(
+      context,
       title: const Text('Détail de l’annonce'),
       actions: [
         IconButton(
@@ -135,7 +137,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                             ),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [

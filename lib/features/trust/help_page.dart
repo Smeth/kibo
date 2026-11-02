@@ -1,3 +1,5 @@
+import '../../core/widgets/kibo_app_bar.dart';
+import '../../core/widgets/kibo_form_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,8 +10,8 @@ class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Aide et confidentialité')),
-    body: ListView(
+    appBar: KiboAppBar(context, title: const Text('Aide et confidentialité')),
+    body: KiboFormListView(
       padding: const EdgeInsets.all(16),
       children: [
         Text(
@@ -17,7 +19,7 @@ class HelpPage extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Besoin d’aide ou d’un recours après modération ? '
           'Écrivez au support en indiquant le contexte et, si possible, '
           'l’identifiant de l’annonce. Ne transmettez jamais votre mot de passe, '
@@ -28,10 +30,11 @@ class HelpPage extends StatelessWidget {
         TextButton(
           onPressed: () async {
             try {
-              await launchUrl(
+              final opened = await launchUrl(
                 Uri.parse(kiboHelpUrl),
                 mode: LaunchMode.externalApplication,
               );
+              if (!opened) throw StateError('Browser unavailable');
             } catch (_) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -50,13 +53,18 @@ class HelpPage extends StatelessWidget {
           icon: const Icon(Icons.mail_outline),
           label: const Text('Écrire au support'),
           onPressed: () async {
-            final opened = await launchUrl(
-              Uri(
-                scheme: 'mailto',
-                path: kiboSupportEmail,
-                queryParameters: {'subject': 'Assistance KIBO'},
-              ),
-            );
+            var opened = false;
+            try {
+              opened = await launchUrl(
+                Uri(
+                  scheme: 'mailto',
+                  path: kiboSupportEmail,
+                  queryParameters: {'subject': 'Assistance KIBO'},
+                ),
+              );
+            } catch (_) {
+              opened = false;
+            }
             if (!opened && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -69,22 +77,19 @@ class HelpPage extends StatelessWidget {
           },
         ),
         const Divider(),
-        const Text(
-          'Vos données',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const Text(
+        Text('Vos données', style: Theme.of(context).textTheme.titleMedium),
+        Text(
           'Les annonces et les informations publiques du profil sont '
           'visibles sans compte. Vos coordonnées de contact ne sont partagées '
           'qu’après connexion et selon vos choix. Les favoris visiteurs restent '
           'sur le téléphone ; leur transfert vers un compte demande votre accord.',
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Messages et sécurité',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        const Text(
+        Text(
           'Les conversations sont réservées à leurs participants et aux '
           'administrateurs autorisés pour la sécurité et la modération. '
           'Elles ne sont pas chiffrées de bout en bout. Signalez un abus depuis '
@@ -92,11 +97,11 @@ class HelpPage extends StatelessWidget {
           'échanges, sans effacer les échanges existants.',
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Supprimer mon compte',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        const Text(
+        Text(
           'Depuis Profil → Compte et données, demandez la suppression. '
           'Vous pouvez aussi écrire au support depuis l’adresse liée au compte, '
           'sans envoyer de secret. La demande est vérifiée avant exécution. '
@@ -106,11 +111,11 @@ class HelpPage extends StatelessWidget {
           'leur propre cycle ; les copies déjà exportées ne peuvent être rappelées.',
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Règles de la marketplace',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        const Text(
+        Text(
           'Pas d’arnaque, de harcèlement, de contenu illégal ou trompeur. '
           'La publication est immédiate après validation, puis modérée. '
           'Une décision peut être contestée auprès du support. '
@@ -118,7 +123,7 @@ class HelpPage extends StatelessWidget {
           'Ne versez pas d’acompte sans avoir vérifié le bien et le vendeur.',
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Version pilote 1.0.0+2 · Android · mise à jour du 2 novembre 2026',
         ),
       ],

@@ -1,3 +1,5 @@
+import '../../core/widgets/kibo_form_layout.dart';
+import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -108,14 +110,15 @@ class _ReportTargetPageState extends State<ReportTargetPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(
+      appBar: KiboAppBar(
+        context,
         title: Text(
           widget.kind == 'message'
               ? 'Signaler le message'
               : 'Signaler le profil',
         ),
       ),
-      body: ListView(
+      body: KiboFormListView(
         padding: const EdgeInsets.all(16),
         children: [
           if (_invalid)
@@ -133,8 +136,7 @@ class _ReportTargetPageState extends State<ReportTargetPage> {
           ] else
             Form(
               key: _form,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: KiboFormColumn(
                 children: [
                   const Text(
                     'Le signalement sera examiné par la modération. Il ne bloque pas automatiquement la personne.',

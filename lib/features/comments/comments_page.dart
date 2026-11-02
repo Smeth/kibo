@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import '../auth/auth_controller.dart';
@@ -145,7 +146,8 @@ class _CommentsPageState extends State<CommentsPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_sending,
     child: Scaffold(
-      appBar: AppBar(
+      appBar: KiboAppBar(
+        context,
         title: Text(widget.parentId == null ? 'Commentaires' : 'Réponses'),
       ),
       body: KiboFormListView(

@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../auth/auth_controller.dart';
 import '../profile/engagement_repository.dart';
@@ -101,7 +102,8 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
+    appBar: KiboAppBar(
+      context,
       title: const Text('Administration'),
       actions: [
         IconButton(

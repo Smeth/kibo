@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -286,7 +287,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(title: const Text('Compte et données')),
+      appBar: KiboAppBar(context, title: const Text('Compte et données')),
       body: _invalid
           ? const Center(
               child: Text('Session modifiée. Revenez depuis Profil.'),
@@ -295,7 +296,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               onRefresh: () async {
                 if (!_busy && !_loading) await _load();
               },
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               children: [
                 if (widget.repository is AccountEngagementRepository) ...[
                   OutlinedButton.icon(

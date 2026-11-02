@@ -159,6 +159,15 @@ class _SafetyEntryState extends State<SafetyEntry> with WidgetsBindingObserver {
         )
       : IconButton(
           tooltip: 'Notifications',
+          padding: EdgeInsets.fromLTRB(
+            12,
+            12,
+            12 +
+                ((_count ?? 0) > 0
+                    ? MediaQuery.textScalerOf(context).scale(12)
+                    : 0),
+            12,
+          ),
           onPressed: widget.onPressed,
           icon: Badge(
             isLabelVisible: (_count ?? 0) > 0,

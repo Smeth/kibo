@@ -51,7 +51,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             AuthPage(controller: auth, embedded: true),
-            const _HelpEntry(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: _HelpEntry(),
+            ),
           ],
         ),
       );
@@ -191,10 +194,6 @@ class ProfilePage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
-            FilledButton(
-              onPressed: auth.busy ? null : auth.signOut,
-              child: Text(auth.busy ? 'Veuillez patienter…' : 'Se déconnecter'),
-            ),
             if (TrustScope.maybeClient(context) case final client?) ...[
               KiboMenuAction(
                 icon: Icons.security_outlined,
@@ -220,7 +219,15 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 16),
             Semantics(liveRegion: true, child: Text(auth!.message!)),
           ],
+          const SizedBox(height: 16),
           const _HelpEntry(),
+          if (auth != null) ...[
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: auth.busy ? null : auth.signOut,
+              child: Text(auth.busy ? 'Veuillez patienter…' : 'Se déconnecter'),
+            ),
+          ],
         ],
       ),
     );

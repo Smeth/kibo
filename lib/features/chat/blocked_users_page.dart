@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../auth/auth_controller.dart';
 import 'chat_repository.dart';
@@ -119,13 +120,13 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(title: const Text('Interlocuteurs bloqués')),
+      appBar: KiboAppBar(context, title: const Text('Interlocuteurs bloqués')),
       body: _invalid
           ? const Center(
               child: Text('Session modifiée. Revenez depuis Profil.'),
             )
           : ListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               children: [
                 const Text(
                   'Le blocage concerne les nouveaux échanges dans le chat KIBO. L’historique reste accessible ; les appels et WhatsApp sont indépendants.',

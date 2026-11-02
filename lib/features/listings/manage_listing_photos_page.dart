@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../auth/auth_controller.dart';
@@ -177,109 +178,116 @@ class _ManageListingPhotosPageState extends State<ManageListingPhotosPage> {
   Widget build(BuildContext context) => PopScope(
     canPop: !_busy,
     child: Scaffold(
-      appBar: AppBar(title: const Text('Gérer les photos')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const Text(
-            'Jusqu’à 3 photos. La première sera la couverture. Les changements sont appliqués ensemble après enregistrement.',
-          ),
-          const SizedBox(height: 24),
-          if (_invalid)
-            const Text('La session a changé. Revenez à vos annonces.')
-          else ...[
-            for (var i = 0; i < _photos.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 160,
-                          width: double.infinity,
-                          child: _photos[i].draft != null
-                              ? Image.memory(
-                                  _photos[i].draft!.bytes,
-                                  fit: BoxFit.cover,
-                                )
-                              : ListingPhotoView(
-                                  path: _photos[i].path!,
-                                  label: 'Photo ${i + 1}',
-                                ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 8,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            if (i == 0) const Chip(label: Text('Couverture')),
-                            IconButton(
-                              tooltip: 'Déplacer avant',
-                              onPressed: _busy || _attempted || i == 0
-                                  ? null
-                                  : () => setState(() {
-                                      final p = _photos.removeAt(i);
-                                      _photos.insert(i - 1, p);
-                                    }),
-                              icon: const Icon(Icons.arrow_upward),
-                            ),
-                            IconButton(
-                              tooltip: 'Déplacer après',
-                              onPressed:
-                                  _busy || _attempted || i == _photos.length - 1
-                                  ? null
-                                  : () => setState(() {
-                                      final p = _photos.removeAt(i);
-                                      _photos.insert(i + 1, p);
-                                    }),
-                              icon: const Icon(Icons.arrow_downward),
-                            ),
-                            IconButton(
-                              tooltip: 'Retirer la photo',
-                              onPressed: _busy || _attempted
-                                  ? null
-                                  : () => setState(() => _photos.removeAt(i)),
-                              icon: const Icon(Icons.delete_outline),
-                            ),
-                          ],
-                        ),
-                      ],
+      appBar: KiboAppBar(context, title: const Text('Gérer les photos')),
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const Text(
+              'Jusqu’à 3 photos. La première sera la couverture. Les changements sont appliqués ensemble après enregistrement.',
+            ),
+            const SizedBox(height: 24),
+            if (_invalid)
+              const Text('La session a changé. Revenez à vos annonces.')
+            else ...[
+              for (var i = 0; i < _photos.length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 160,
+                            width: double.infinity,
+                            child: _photos[i].draft != null
+                                ? Image.memory(
+                                    _photos[i].draft!.bytes,
+                                    fit: BoxFit.contain,
+                                  )
+                                : ListingPhotoView(
+                                    path: _photos[i].path!,
+                                    label: 'Photo ${i + 1}',
+                                    fit: BoxFit.contain,
+                                  ),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 8,
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              if (i == 0) const Chip(label: Text('Couverture')),
+                              IconButton(
+                                tooltip: 'Déplacer avant',
+                                onPressed: _busy || _attempted || i == 0
+                                    ? null
+                                    : () => setState(() {
+                                        final p = _photos.removeAt(i);
+                                        _photos.insert(i - 1, p);
+                                      }),
+                                icon: const Icon(Icons.arrow_upward),
+                              ),
+                              IconButton(
+                                tooltip: 'Déplacer après',
+                                onPressed:
+                                    _busy ||
+                                        _attempted ||
+                                        i == _photos.length - 1
+                                    ? null
+                                    : () => setState(() {
+                                        final p = _photos.removeAt(i);
+                                        _photos.insert(i + 1, p);
+                                      }),
+                                icon: const Icon(Icons.arrow_downward),
+                              ),
+                              IconButton(
+                                tooltip: 'Retirer la photo',
+                                onPressed: _busy || _attempted
+                                    ? null
+                                    : () => setState(() => _photos.removeAt(i)),
+                                icon: const Icon(Icons.delete_outline),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            if (_state?.editable == true && _photos.length < 3)
-              OutlinedButton.icon(
-                onPressed: _busy || _attempted ? null : _pick,
-                icon: const Icon(Icons.add_photo_alternate_outlined),
-                label: const Text('Ajouter des photos'),
-              ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              Semantics(liveRegion: true, child: Text(_error!)),
-              const SizedBox(height: 16),
-            ],
-            if (_busy) const Center(child: CircularProgressIndicator()),
-            const SizedBox(height: 16),
-            if (_state?.editable == true)
-              FilledButton(
-                onPressed: _busy ? null : _save,
-                child: Text(
-                  _attempted
-                      ? 'Réessayer l’enregistrement'
-                      : 'Enregistrer la galerie',
+              if (_state?.editable == true && _photos.length < 3)
+                OutlinedButton.icon(
+                  onPressed: _busy || _attempted ? null : _pick,
+                  icon: const Icon(Icons.add_photo_alternate_outlined),
+                  label: const Text('Ajouter des photos'),
                 ),
+              if (_error != null) ...[
+                const SizedBox(height: 16),
+                Semantics(liveRegion: true, child: Text(_error!)),
+                const SizedBox(height: 16),
+              ],
+              if (_busy) const Center(child: CircularProgressIndicator()),
+              const SizedBox(height: 16),
+              if (_state?.editable == true)
+                FilledButton(
+                  onPressed: _busy ? null : _save,
+                  child: Text(
+                    _attempted
+                        ? 'Réessayer l’enregistrement'
+                        : 'Enregistrer la galerie',
+                  ),
+                ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: _busy ? null : _load,
+                child: const Text('Recharger la galerie'),
               ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: _busy ? null : _load,
-              child: const Text('Recharger la galerie'),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     ),
   );

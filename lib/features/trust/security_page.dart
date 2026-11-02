@@ -1,3 +1,6 @@
+import '../../core/widgets/kibo_section.dart';
+import '../../core/widgets/kibo_app_bar.dart';
+import '../../core/widgets/kibo_form_layout.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -136,13 +139,17 @@ class _SecurityPageState extends State<SecurityPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Sécurité du compte')),
-    body: ListView(
+    appBar: KiboAppBar(context, title: const Text('Sécurité du compte')),
+    body: KiboFormListView(
       padding: const EdgeInsets.all(16),
       children: [
         if (_sessionLost)
           const Text('Session modifiée. Fermez cette page et reconnectez-vous.')
         else ...[
+          const KiboSection(
+            title: 'Protection du compte',
+            icon: Icons.verified_user_outlined,
+          ),
           const Text(
             'Protégez votre compte avec une application d’authentification TOTP. '
             'Ce code est indépendant des SMS. Conservez l’accès à votre application '
@@ -161,6 +168,7 @@ class _SecurityPageState extends State<SecurityPage> {
               'Ajoutez manuellement un compte TOTP nommé KIBO dans votre application, avec cette clé privée.',
             ),
             SwitchListTile(
+              contentPadding: EdgeInsets.zero,
               value: _showSecret,
               onChanged: (v) => setState(() => _showSecret = v),
               title: const Text('Afficher la clé privée sur ce téléphone'),
