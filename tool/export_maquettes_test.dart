@@ -426,100 +426,108 @@ void main() {
       }) async {
         const only = String.fromEnvironment('KIBO_UI_ONLY');
         if (only.isNotEmpty && !only.split(',').any(id.startsWith)) return;
-        tester.view.resetViewInsets();
-        debugPrint('MAQUETTE $id ${brightness.name}');
-        await tester.pumpWidget(const SizedBox());
-        await tester.pump();
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 250)),
-        );
-        await settle();
-        appearance.mode = brightness == Brightness.dark
-            ? ThemeMode.dark
-            : ThemeMode.light;
-        final navigator = GlobalKey<NavigatorState>();
-        final routed = !scaffold && body is! KiboHomePage;
-        Widget screen = scaffold ? Scaffold(body: SafeArea(child: body)) : body;
-        screen = TrustScope(
-          clientProvider: () => _Client(),
-          child: AuthScope(
-            controller: signedIn ? auth : guest,
-            child: FavoritesScope(
-              controller: favorites,
-              child: ListingPhotoScope(
-                repository: photos,
-                picker: photos,
-                child: screen,
-              ),
-            ),
-          ),
-        );
-        await tester.pumpWidget(
-          AppearanceScope(
-            controller: appearance,
-            child: RepaintBoundary(
-              key: _boundary,
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(
-                    textScaler: TextScaler.linear(
-                      const int.fromEnvironment(
-                            'KIBO_UI_TEXT_SCALE',
-                            defaultValue: 100,
-                          ) /
-                          100,
-                    ),
-                  ),
-                  child: child!,
-                ),
-                theme: KiboTheme.light,
-                darkTheme: KiboTheme.dark,
-                themeMode: appearance.mode,
-                navigatorKey: navigator,
-                home: routed ? const Scaffold() : screen,
-              ),
-            ),
-          ),
-        );
-        if (routed) {
-          navigator.currentState!
-              .push(MaterialPageRoute<void>(builder: (_) => screen))
-              .ignore();
-        }
-        for (var cycle = 0; cycle < 3; cycle++) {
+        final previousShadowMode = debugDisableShadows;
+        debugDisableShadows = false;
+        try {
+          tester.view.resetViewInsets();
+          debugPrint('MAQUETTE $id ${brightness.name}');
+          await tester.pumpWidget(const SizedBox());
           await tester.pump();
           await tester.runAsync(
-            () => Future<void>.delayed(const Duration(milliseconds: 150)),
+            () => Future<void>.delayed(const Duration(milliseconds: 250)),
           );
-        }
-        await settle();
-        if (prepare != null) {
-          await prepare();
           await settle();
+          appearance.mode = brightness == Brightness.dark
+              ? ThemeMode.dark
+              : ThemeMode.light;
+          final navigator = GlobalKey<NavigatorState>();
+          final routed = !scaffold && body is! KiboHomePage;
+          Widget screen = scaffold
+              ? Scaffold(body: SafeArea(child: body))
+              : body;
+          screen = TrustScope(
+            clientProvider: () => _Client(),
+            child: AuthScope(
+              controller: signedIn ? auth : guest,
+              child: FavoritesScope(
+                controller: favorites,
+                child: ListingPhotoScope(
+                  repository: photos,
+                  picker: photos,
+                  child: screen,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpWidget(
+            AppearanceScope(
+              controller: appearance,
+              child: RepaintBoundary(
+                key: _boundary,
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  builder: (context, child) => MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.linear(
+                        const int.fromEnvironment(
+                              'KIBO_UI_TEXT_SCALE',
+                              defaultValue: 100,
+                            ) /
+                            100,
+                      ),
+                    ),
+                    child: child!,
+                  ),
+                  theme: KiboTheme.light,
+                  darkTheme: KiboTheme.dark,
+                  themeMode: appearance.mode,
+                  navigatorKey: navigator,
+                  home: routed ? const Scaffold() : screen,
+                ),
+              ),
+            ),
+          );
+          if (routed) {
+            navigator.currentState!
+                .push(MaterialPageRoute<void>(builder: (_) => screen))
+                .ignore();
+          }
+          for (var cycle = 0; cycle < 3; cycle++) {
+            await tester.pump();
+            await tester.runAsync(
+              () => Future<void>.delayed(const Duration(milliseconds: 150)),
+            );
+          }
+          await settle();
+          if (prepare != null) {
+            await prepare();
+            await settle();
+          }
+          final exception = tester.takeException();
+          if (exception != null) {
+            layoutErrors.add('$id ${brightness.name}: $exception');
+          }
+          final mode = brightness == Brightness.dark ? 'sombre' : 'clair';
+          final path = '$_output/$mode/$id.png';
+          final boundary = tester.renderObject<RenderRepaintBoundary>(
+            find.byKey(_boundary),
+          );
+          await tester.runAsync(() async {
+            final image = await boundary.toImage(pixelRatio: 2);
+            final data = await image.toByteData(format: ui.ImageByteFormat.png);
+            await File(path).parent.create(recursive: true);
+            await File(path).writeAsBytes(data!.buffer.asUint8List());
+            image.dispose();
+          });
+          entries.add({
+            'id': id,
+            'title': title,
+            'mode': mode,
+            'path': '$mode/$id.png',
+          });
+        } finally {
+          debugDisableShadows = previousShadowMode;
         }
-        final exception = tester.takeException();
-        if (exception != null) {
-          layoutErrors.add('$id ${brightness.name}: $exception');
-        }
-        final mode = brightness == Brightness.dark ? 'sombre' : 'clair';
-        final path = '$_output/$mode/$id.png';
-        final boundary = tester.renderObject<RenderRepaintBoundary>(
-          find.byKey(_boundary),
-        );
-        await tester.runAsync(() async {
-          final image = await boundary.toImage(pixelRatio: 2);
-          final data = await image.toByteData(format: ui.ImageByteFormat.png);
-          await File(path).parent.create(recursive: true);
-          await File(path).writeAsBytes(data!.buffer.asUint8List());
-          image.dispose();
-        });
-        entries.add({
-          'id': id,
-          'title': title,
-          'mode': mode,
-          'path': '$mode/$id.png',
-        });
       }
 
       for (final brightness in [
@@ -1102,6 +1110,78 @@ void main() {
           ),
           brightness,
           scaffold: true,
+        );
+        Future<void> selectOwned() async {
+          final action = find.text('Sélectionner les annonces chargées');
+          await tester.ensureVisible(action);
+          await settle();
+          await tester.tap(action);
+          await settle();
+        }
+
+        await shot(
+          '61-selection-annonces',
+          'Barre de sélection compacte',
+          MyListingsPage(repository: _Owned(), listings: listings),
+          brightness,
+          prepare: selectOwned,
+        );
+        await shot(
+          '62-actions-selection',
+          'Actions de la sélection',
+          MyListingsPage(repository: _Owned(), listings: listings),
+          brightness,
+          prepare: () async {
+            await selectOwned();
+            await tester.tap(find.byTooltip('Actions de la sélection'));
+          },
+        );
+        await shot(
+          '63-confirmer-selection',
+          'Confirmation groupée',
+          MyListingsPage(repository: _Owned(), listings: listings),
+          brightness,
+          prepare: () async {
+            await selectOwned();
+            await tester.tap(find.byTooltip('Actions de la sélection'));
+            await settle();
+            await tester.tap(find.text('Supprimer la sélection'));
+          },
+        );
+        await shot(
+          '64-confirmer-transfert',
+          'Consentement de transfert',
+          FavoritesScope(
+            controller: transferFavorites,
+            child: FavoritesPage(listings: listings),
+          ),
+          brightness,
+          scaffold: true,
+          prepare: () async {
+            await tester.ensureVisible(find.text('Ajouter à mon compte'));
+            await settle();
+            await tester.tap(find.text('Ajouter à mon compte'));
+          },
+        );
+        await shot(
+          '65-confirmer-blocage',
+          'Confirmation de blocage',
+          ChatPage(repository: chats, ownerId: 'test-user-a', thread: thread),
+          brightness,
+          prepare: () async =>
+              tester.tap(find.byTooltip('Bloquer cet interlocuteur')),
+        );
+        await shot(
+          '66-effacer-brouillon',
+          'Confirmation du brouillon',
+          PublishListingPage(repository: listings, draftStore: previewStore),
+          brightness,
+          scaffold: true,
+          prepare: () async {
+            await tester.ensureVisible(find.text('Effacer le brouillon local'));
+            await settle();
+            await tester.tap(find.text('Effacer le brouillon local'));
+          },
         );
       }
       tester.view.resetViewInsets();

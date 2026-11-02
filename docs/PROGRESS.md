@@ -1,3 +1,11 @@
+# Fenêtres et sélection repensées — 2026-11-02
+
+Code applicatif `a0b3d13` : barre de sélection compacte et menu dédié dans Mes annonces ; aperçu présenté comme une carte ; surfaces communes pour feuilles, menus et confirmations. Commandes pleine largeur, fermeture explicite, rayon/marges homogènes, contenus défilants et actions accessibles. Menus des messages identiques depuis les points et l'appui long. Titres et cartes adaptés au texte à 200 %, sans plafonner la préférence système. [Rapport et couverture](MODAL_REDESIGN_20261102.md).
+
+Suites globales : **460 tests standard et 460 avec photos réussis**. Après les derniers ajustements visuels, **38 tests ciblés puis 9 tests de sélection renforcés réussis**, et le rendu spécifique de l'aperçu en grande police a été rejoué. **26 rendus clair/sombre et 13 à 320 px/texte 200 %** contrôlés. Analyse stricte conforme, formatage de 160 fichiers et diff vérifiés. Tests explicites d'annulation, de confirmation et de perte de session ; aucune action de sélection exécutée à l'ouverture d'un menu.
+
+Version finale `a0b3d13` installée et relancée sur TECNO CK6n en profile : build 53,7 s, installation 6,6 s, processus 20367 et premier plan confirmés. Barre et menu contrôlés physiquement en sombre, sans mutation d'annonce ; sélection locale annulée puis retour à l'accueil. Données et préférence d'apparence conservées. Aucun changement Supabase, fournisseur ou règle métier.
+
 # Revue UI/UX de tous les parcours — 2026-11-02
 
 Revue des widgets réels sur fixtures : catalogue étendu aux pages aide, sécurité, alertes Android, signalements de profils/messages, archives, galerie et administration ; bas des formulaires, fenêtres et clavier inclus. 60 vues/états inventoriés, dont les variantes Google, le consentement de transfert des favoris et l'écran téléphone préparé (OTP toujours désactivé). [Couverture, corrections et commandes](UIUX_AUDIT_20261102.md).

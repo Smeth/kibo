@@ -1,3 +1,9 @@
+## Reprise après refonte des fenêtres — 2026-11-02
+
+Code applicatif `a0b3d13` : sélection et actions de Mes annonces, aperçu, menus et confirmations harmonisés. [Rapport et commandes](MODAL_REDESIGN_20261102.md). 460 tests standard et 460 photos, puis vérifications ciblées des dernières retouches, analyse et 39 rendus modaux conformes. Dernière version installée sur TECNO, processus 20367 et premier plan confirmés, données conservées ; barre et menu inspectés physiquement en sombre. Sélection locale annulée, application à l'accueil ; aucun changement métier distant.
+
+Après ce lot, conserver les priorités humaines ci-dessous : recette réelle Google/deux comptes, enrôlement TOTP, Firebase et sauvegarde de signature. Le bundle signé antérieur devra être reconstruit avant diffusion ; l'OTP reste exclu et le catalogue de recette visible.
+
 ## Reprise après revue UI/UX — 2026-11-02
 
 Lot UI/UX terminé, code applicatif `520be4f` : corrections de marges, titres, profil, compteurs, cartes, formulaires, consentement de transfert et galerie. Revue de 60 vues/états sur fixtures, 120 rendus clair/sombre et 60 rendus en texte agrandi ; [rapport écran par écran](UIUX_AUDIT_20261102.md). 454 tests standard et 454 photos réussis, analyse conforme. Dernière version installée sur TECNO, processus 18878 et premier plan confirmés ; données conservées, accueil/favoris/profil contrôlés physiquement. L'application reste sur l'accueil.
