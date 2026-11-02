@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../auth/auth_controller.dart';
@@ -71,7 +72,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
     }
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => KiboDialog(
         title: const Text('Débloquer cet interlocuteur ?'),
         content: const Text(
           'Vous pourrez de nouveau échanger sur KIBO. Un éventuel blocage de son côté reste actif.',

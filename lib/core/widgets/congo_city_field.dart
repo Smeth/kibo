@@ -1,3 +1,4 @@
+import 'kibo_modal.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -79,10 +80,8 @@ Future<String?> pickCongoCity(
   BuildContext context, {
   String? current,
   bool allowAll = false,
-}) => showModalBottomSheet<String>(
+}) => showKiboModalSheet<String>(
   context: context,
-  isScrollControlled: true,
-  useSafeArea: true,
   builder: (_) => _CityPicker(current: current, allowAll: allowAll),
 );
 
@@ -161,129 +160,128 @@ class _CityPickerState extends State<_CityPicker> {
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-    child: SizedBox(
-      height:
-          (MediaQuery.sizeOf(context).height -
-              MediaQuery.viewInsetsOf(context).bottom) *
-          .88,
-      child: FutureBuilder<List<CongoPlace>>(
-        future: _places,
-        builder: (context, snapshot) {
-          final rows = (snapshot.data ?? <CongoPlace>[])
-              .where((place) => _query.isEmpty || place.search.contains(_query))
-              .toList();
-          return CustomScrollView(
-            key: const ValueKey('congo-city-options'),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Villes du Congo',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: 'Source des villes',
-                        onPressed: () => showLicensePage(
-                          context: context,
-                          applicationName: 'KIBO',
-                        ),
-                        icon: const Icon(Icons.info_outline),
-                      ),
-                      IconButton(
-                        tooltip: 'Fermer les villes',
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: KiboSearchFieldTheme(
-                    child: SearchBar(
-                      controller: _search,
-                      hintText: 'Rechercher une ville ou une localité',
-                      leading: const Icon(Icons.search),
-                      onChanged: (value) =>
-                          setState(() => _query = citySearchKey(value)),
-                    ),
-                  ),
-                ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 8)),
-              if (snapshot.hasError)
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () =>
-                          setState(() => _places = CongoPlaces.load()),
-                      child: const Text('Réessayer la liste des villes'),
-                    ),
-                  ),
-                )
-              else if (!snapshot.hasData)
-                const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                )
-              else ...[
-                if (widget.allowAll)
-                  SliverToBoxAdapter(
-                    child: ListTile(
-                      title: const Text('Toutes les villes'),
-                      leading: const Icon(Icons.public),
-                      onTap: () => Navigator.pop(context, ''),
-                    ),
-                  ),
-                if (rows.isEmpty)
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
+  Widget build(BuildContext context) => SizedBox(
+    height:
+        (MediaQuery.sizeOf(context).height -
+            MediaQuery.viewInsetsOf(context).bottom) *
+        .88,
+    child: FutureBuilder<List<CongoPlace>>(
+      future: _places,
+      builder: (context, snapshot) {
+        final rows = (snapshot.data ?? <CongoPlace>[])
+            .where((place) => _query.isEmpty || place.search.contains(_query))
+            .toList();
+        return CustomScrollView(
+          key: const ValueKey('congo-city-options'),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 12, 12),
+                child: Row(
+                  children: [
+                    Expanded(
                       child: Text(
-                        'Aucune ville ou localité du Congo-Brazzaville trouvée.',
+                        'Villes du Congo',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
+                    IconButton(
+                      tooltip: 'Source des villes',
+                      onPressed: () => showLicensePage(
+                        context: context,
+                        applicationName: 'KIBO',
+                      ),
+                      icon: const Icon(Icons.info_outline),
+                    ),
+                    IconButton(
+                      tooltip: 'Fermer les villes',
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: KiboSearchFieldTheme(
+                  child: SearchBar(
+                    controller: _search,
+                    hintText: 'Rechercher une ville ou une localité',
+                    leading: const Icon(Icons.search),
+                    onChanged: (value) =>
+                        setState(() => _query = citySearchKey(value)),
                   ),
-                SliverList.builder(
-                  itemCount: rows.length,
-                  itemBuilder: (context, index) {
-                    final name = rows[index].name;
-                    final selected =
-                        citySearchKey(name) ==
-                        citySearchKey(widget.current ?? '');
-                    return ListTile(
-                      title: Text(name),
-                      selected: selected,
-                      trailing: selected ? const Icon(Icons.check) : null,
-                      onTap: () => Navigator.pop(context, name),
-                    );
-                  },
                 ),
-              ],
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
+            if (snapshot.hasError)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: TextButton(
+                    onPressed: () =>
+                        setState(() => _places = CongoPlaces.load()),
+                    child: const Text('Réessayer la liste des villes'),
+                  ),
+                ),
+              )
+            else if (!snapshot.hasData)
               const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('Villes et localités · GeoNames · CC BY 4.0'),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
+              )
+            else ...[
+              if (widget.allowAll)
+                SliverToBoxAdapter(
+                  child: ListTile(
+                    title: const Text('Toutes les villes'),
+                    leading: const Icon(Icons.public),
+                    onTap: () => Navigator.pop(context, ''),
+                  ),
+                ),
+              if (rows.isEmpty)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'Aucune ville ou localité du Congo-Brazzaville trouvée.',
+                    ),
+                  ),
+                ),
+              SliverList.builder(
+                itemCount: rows.length,
+                itemBuilder: (context, index) {
+                  final name = rows[index].name;
+                  final selected =
+                      citySearchKey(name) ==
+                      citySearchKey(widget.current ?? '');
+                  return ListTile(
+                    title: Text(name),
+                    selected: selected,
+                    trailing: selected ? const Icon(Icons.check) : null,
+                    onTap: () => Navigator.pop(context, name),
+                  );
+                },
               ),
             ],
-          );
-        },
-      ),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('Villes et localités · GeoNames · CC BY 4.0'),
+              ),
+            ),
+          ],
+        );
+      },
     ),
   );
 }

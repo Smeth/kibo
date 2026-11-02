@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import 'package:flutter/material.dart';
 import '../listings/listing_repository.dart';
 import '../listings/listing_card.dart';
@@ -119,7 +120,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                           controller.sessionRevision;
                                       final confirmed = await showDialog<bool>(
                                         context: context,
-                                        builder: (context) => AlertDialog(
+                                        builder: (context) => KiboDialog(
                                           title: const Text(
                                             'Ajouter au compte connecté ?',
                                           ),

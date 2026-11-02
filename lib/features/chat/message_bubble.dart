@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chat_repository.dart';
@@ -16,49 +17,38 @@ class MessageBubble extends StatelessWidget {
   final bool mine;
   final VoidCallback? onEdit, onDelete, onReport;
   Future<void> _showActions(BuildContext context) async {
-    final action = await showModalBottomSheet<String>(
+    final action = await showKiboModalSheet<String>(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      builder: (context) => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Actions du message',
-                style: Theme.of(context).textTheme.titleLarge,
+      builder: (context) => KiboSheet(
+        title: 'Actions du message',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onEdit != null)
+              KiboSheetAction(
+                label: 'Modifier',
+                icon: Icons.edit_outlined,
+                onTap: () => Navigator.pop(context, 'edit'),
               ),
-              if (onEdit != null)
-                ListTile(
-                  leading: const Icon(Icons.edit_outlined),
-                  title: const Text('Modifier'),
-                  onTap: () => Navigator.pop(context, 'edit'),
-                ),
-              if (onDelete != null)
-                ListTile(
-                  leading: Icon(
-                    Icons.delete_outline,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  title: const Text('Supprimer'),
-                  onTap: () => Navigator.pop(context, 'delete'),
-                ),
-              if (onReport != null)
-                ListTile(
-                  leading: const Icon(Icons.flag_outlined),
-                  title: const Text('Signaler'),
-                  onTap: () => Navigator.pop(context, 'report'),
-                ),
-              ListTile(
-                leading: const Icon(Icons.copy_outlined),
-                title: const Text('Copier'),
-                onTap: () => Navigator.pop(context, 'copy'),
+            if (onReport != null)
+              KiboSheetAction(
+                label: 'Signaler',
+                icon: Icons.flag_outlined,
+                onTap: () => Navigator.pop(context, 'report'),
               ),
-            ],
-          ),
+            KiboSheetAction(
+              label: 'Copier',
+              icon: Icons.copy_outlined,
+              onTap: () => Navigator.pop(context, 'copy'),
+            ),
+            if (onDelete != null)
+              KiboSheetAction(
+                label: 'Supprimer',
+                icon: Icons.delete_outline,
+                destructive: true,
+                onTap: () => Navigator.pop(context, 'delete'),
+              ),
+          ],
         ),
       ),
     );
@@ -120,41 +110,11 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                     if (onEdit != null || onDelete != null || onReport != null)
-                      PopupMenuButton<String>(
+                      IconButton(
                         key: ValueKey('message-actions-${message.id}'),
                         tooltip: 'Actions du message',
                         icon: const Icon(Icons.more_horiz, size: 20),
-                        onSelected: (value) {
-                          if (value == 'edit') onEdit?.call();
-                          if (value == 'delete') onDelete?.call();
-                          if (value == 'report') onReport?.call();
-                        },
-                        itemBuilder: (_) => [
-                          if (onReport != null)
-                            const PopupMenuItem(
-                              value: 'report',
-                              child: ListTile(
-                                leading: Icon(Icons.flag_outlined),
-                                title: Text('Signaler'),
-                              ),
-                            ),
-                          if (onEdit != null)
-                            const PopupMenuItem(
-                              value: 'edit',
-                              child: ListTile(
-                                leading: Icon(Icons.edit_outlined),
-                                title: Text('Modifier'),
-                              ),
-                            ),
-                          if (onDelete != null)
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: ListTile(
-                                leading: Icon(Icons.delete_outline),
-                                title: Text('Supprimer'),
-                              ),
-                            ),
-                        ],
+                        onPressed: () => _showActions(context),
                       ),
                   ],
                 ),
@@ -242,8 +202,7 @@ class _EditMessageDialogState extends State<EditMessageDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    scrollable: true,
+  Widget build(BuildContext context) => KiboDialog(
     icon: const Icon(Icons.edit_outlined),
     title: const Text('Modifier le message'),
     content: _invalid

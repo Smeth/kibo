@@ -73,7 +73,8 @@ class AppearanceScope extends InheritedNotifier<AppearanceController> {
 }
 
 class AppearancePicker extends StatelessWidget {
-  const AppearancePicker({super.key});
+  const AppearancePicker({super.key, this.showHeading = true});
+  final bool showHeading;
   @override
   Widget build(BuildContext context) {
     final controller = AppearanceScope.maybeOf(context);
@@ -81,8 +82,10 @@ class AppearancePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Apparence', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        if (showHeading) ...[
+          Text('Apparence', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+        ],
         Wrap(
           spacing: 8,
           runSpacing: 8,

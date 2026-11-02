@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 import '../trust/report_target_page.dart';
@@ -322,8 +323,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       if (delete) {
         final confirmed = await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            scrollable: true,
+          builder: (context) => KiboDialog(
+            destructive: true,
             icon: const Icon(Icons.delete_outline),
             title: const Text('Supprimer ce message ?'),
             content: const Text(
@@ -445,7 +446,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     final value = !_blockedByMe;
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => KiboDialog(
         title: Text(
           value
               ? 'Bloquer cet interlocuteur ?'

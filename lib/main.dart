@@ -1,3 +1,4 @@
+import 'core/widgets/kibo_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'features/trust/trust_scope.dart';
@@ -681,15 +682,13 @@ class _KiboHomePageState extends State<KiboHomePage> {
                       IconButton(
                         tooltip: 'Changer l’apparence',
                         icon: const Icon(Icons.contrast_rounded),
-                        onPressed: () => showModalBottomSheet<void>(
+                        onPressed: () => showKiboModalSheet<void>(
                           context: context,
                           builder: (_) => AppearanceScope(
                             controller: AppearanceScope.maybeOf(context)!,
-                            child: const SafeArea(
-                              child: Padding(
-                                padding: EdgeInsets.all(24),
-                                child: AppearancePicker(),
-                              ),
+                            child: const KiboSheet(
+                              title: 'Apparence',
+                              child: AppearancePicker(showHeading: false),
                             ),
                           ),
                         ),

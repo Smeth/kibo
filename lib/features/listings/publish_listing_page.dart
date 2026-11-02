@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/congo_city_field.dart';
 import '../auth/auth_controller.dart';
@@ -97,46 +98,82 @@ class _ListingFormState extends State<_ListingForm> {
   Future<void> _preview() async {
     if (_busy || !(_form.currentState?.validate() ?? false)) return;
     FocusScope.of(context).unfocus();
-    await showModalBottomSheet<void>(
+    await showKiboModalSheet<void>(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Aperçu avant publication',
-                style: Theme.of(context).textTheme.titleLarge,
+      builder: (context) => KiboSheet(
+        title: 'Aperçu avant publication',
+        subtitle: 'Vérifiez les informations de votre annonce.',
+        footer: FilledButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Revenir au formulaire'),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(24),
               ),
-              const SizedBox(height: 16),
-              if (_photos.isNotEmpty)
-                Image.memory(
-                  _photos.first.bytes,
-                  height: 180,
-                  fit: BoxFit.contain,
-                ),
-              Text(
-                _title.text,
-                style: Theme.of(context).textTheme.headlineSmall,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_photos.isNotEmpty)
+                    Image.memory(
+                      _photos.first.bytes,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ),
+                  Padding(
+                    padding: EdgeInsets.all(
+                      MediaQuery.textScalerOf(context).scale(18) > 27 ? 12 : 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          _title.text,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          formatListingPrice(
+                            listingPriceValue(_price.text) ?? '',
+                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined, size: 18),
+                            const SizedBox(width: 6),
+                            Expanded(child: Text(_city.text)),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(_description.text),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                '${formatListingPrice(listingPriceValue(_price.text) ?? '')} · ${_city.text}',
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _createdId == null
+                  ? '${_photos.length} photo(s). Rien n’a encore été publié depuis cet aperçu.'
+                  : '${_photos.length} photo(s) à terminer pour l’annonce déjà créée.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-              Text(_description.text),
-              Text(
-                _createdId == null
-                    ? '${_photos.length} photo(s). Rien n’a encore été publié depuis cet aperçu.'
-                    : '${_photos.length} photo(s) à terminer pour l’annonce déjà créée.',
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Revenir au formulaire'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -146,7 +183,8 @@ class _ListingFormState extends State<_ListingForm> {
     if (_busy || widget.draftStore == null) return;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => KiboDialog(
+        destructive: true,
         title: const Text('Effacer le brouillon local ?'),
         content: const Text(
           'Seul le brouillon de ce compte sur cet appareil sera effacé. Une annonce déjà publiée restera dans Mes annonces.',

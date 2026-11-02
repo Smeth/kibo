@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_form_layout.dart';
@@ -27,7 +28,8 @@ class _EngagementPageState extends State<EngagementPage> {
     final confirmation = TextEditingController();
     final accepted = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => KiboDialog(
+        destructive: true,
         title: const Text('Supprimer définitivement ce compte ?'),
         content: SingleChildScrollView(
           child: Column(
@@ -575,7 +577,7 @@ class _ReviewDialogState extends State<_ReviewDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
+  Widget build(BuildContext context) => KiboDialog(
     title: const Text('Examiner la demande'),
     content: _invalid
         ? const Text('Session modifiée. Fermez cette fenêtre.')

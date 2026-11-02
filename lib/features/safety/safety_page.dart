@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import '../../core/widgets/kibo_app_bar.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -220,7 +221,7 @@ class _SafetyPageState extends State<SafetyPage> {
     try {
       final confirmed = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => KiboDialog(
           title: const Text('Confirmer la décision'),
           content: Text(
             action == 'hide'

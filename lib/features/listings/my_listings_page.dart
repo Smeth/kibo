@@ -1,3 +1,4 @@
+import '../../core/widgets/kibo_modal.dart';
 import '../../core/widgets/kibo_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -142,12 +143,12 @@ class _OwnedFeedState extends State<_OwnedFeed> {
     setState(() => _confirming = true);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        scrollable: true,
+      builder: (context) => KiboDialog(
+        destructive: target == 'archived',
         title: Text(
           target == 'archived'
-              ? 'Retirer ${selected.length} annonces du catalogue ?'
-              : 'Marquer ${selected.length} annonces vendues ?',
+              ? 'Retirer ${selected.length == 1 ? "cette annonce" : "${selected.length} annonces"} du catalogue ?'
+              : 'Marquer ${selected.length == 1 ? "cette annonce vendue" : "${selected.length} annonces vendues"} ?',
         ),
         content: Text(
           target == 'archived'
@@ -244,8 +245,8 @@ class _OwnedFeedState extends State<_OwnedFeed> {
     _confirming = true;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        scrollable: true,
+      builder: (context) => KiboDialog(
+        destructive: remove || target == 'archived',
         icon: Icon(remove ? Icons.delete_outline : Icons.inventory_2_outlined),
         title: Text(
           remove
@@ -334,57 +335,86 @@ class _OwnedFeedState extends State<_OwnedFeed> {
     });
   }
 
-  Widget _selectionBar(double availableHeight) => Material(
-    color: Theme.of(context).colorScheme.surfaceContainerLow,
-    child: SafeArea(
-      top: false,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: availableHeight * .4),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  '${_selected.length} annonce(s) sélectionnée(s)',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    FilledButton.tonalIcon(
-                      onPressed: _busy || _loading || _confirming
-                          ? null
-                          : () => _bulk('archived'),
-                      icon: const Icon(Icons.delete_outline),
-                      label: const Text('Supprimer la sélection'),
+  Future<void> _selectionActions() async {
+    if (_busy || _loading || _confirming || !_current) return;
+    final canSell = _rows
+        .where((r) => _selected.contains(r.id))
+        .every((r) => r.canSell);
+    final action = await showKiboModalSheet<String>(
+      context: context,
+      builder: (context) => KiboSheet(
+        title: 'Gérer la sélection',
+        subtitle:
+            '${_selected.length} annonce${_selected.length > 1 ? "s" : ""} sélectionnée${_selected.length > 1 ? "s" : ""}',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            KiboSheetAction(
+              label: 'Marquer la sélection vendue',
+              icon: Icons.check_circle_outline,
+              onTap: canSell ? () => Navigator.pop(context, 'sold') : null,
+            ),
+            KiboSheetAction(
+              label: 'Supprimer la sélection',
+              icon: Icons.inventory_2_outlined,
+              destructive: true,
+              onTap: () => Navigator.pop(context, 'archived'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || !_current || action == null) return;
+    await _bulk(action);
+  }
+
+  Widget _selectionBar(double availableHeight) => SafeArea(
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      child: Material(
+        key: const ValueKey('owned-selection-bar'),
+        color: Theme.of(context).colorScheme.surface,
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: .12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: availableHeight * .4),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        '${_selected.length} annonce${_selected.length > 1 ? 's' : ''}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                     ),
-                    OutlinedButton(
-                      onPressed:
-                          _busy ||
-                              _loading ||
-                              _confirming ||
-                              _rows
-                                  .where((r) => _selected.contains(r.id))
-                                  .any((r) => !r.canSell)
-                          ? null
-                          : () => _bulk('sold'),
-                      child: const Text('Marquer la sélection vendue'),
-                    ),
-                    TextButton.icon(
-                      onPressed: _busy || _loading || _confirming
-                          ? null
-                          : () => setState(_selected.clear),
-                      icon: const Icon(Icons.deselect),
-                      label: const Text('Tout désélectionner'),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    tooltip: 'Actions de la sélection',
+                    onPressed: _busy || _loading || _confirming
+                        ? null
+                        : _selectionActions,
+                    icon: const Icon(Icons.more_horiz_rounded),
+                  ),
+                  IconButton(
+                    tooltip: 'Tout désélectionner',
+                    onPressed: _busy || _loading || _confirming
+                        ? null
+                        : () => setState(_selected.clear),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -399,7 +429,13 @@ class _OwnedFeedState extends State<_OwnedFeed> {
           builder: (context, constraints) => Column(
             children: [
               Expanded(child: _feed()),
-              if (_selected.isNotEmpty) _selectionBar(constraints.maxHeight),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                child: _selected.isNotEmpty
+                    ? _selectionBar(constraints.maxHeight)
+                    : const SizedBox.shrink(),
+              ),
             ],
           ),
         );
@@ -497,13 +533,6 @@ class _OwnedFeedState extends State<_OwnedFeed> {
                     icon: const Icon(Icons.select_all),
                     label: const Text('Sélectionner les annonces chargées'),
                   ),
-                  if (_selected.isNotEmpty)
-                    TextButton(
-                      onPressed: _busy || _confirming
-                          ? null
-                          : () => setState(_selected.clear),
-                      child: const Text('Annuler la sélection'),
-                    ),
                 ],
               ),
               Align(

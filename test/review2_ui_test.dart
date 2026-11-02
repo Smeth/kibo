@@ -227,6 +227,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tap(tester, 'Sélectionner les annonces chargées');
+      await tester.tap(find.byTooltip('Actions de la sélection'));
+      await tester.pumpAndSettle();
       await tap(tester, 'Supprimer la sélection');
       expect(repository.transitions, isEmpty);
       await tap(tester, 'Confirmer la sélection');
@@ -257,6 +259,8 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tap(tester, 'Sélectionner les annonces chargées');
+    await tester.tap(find.byTooltip('Actions de la sélection'));
+    await tester.pumpAndSettle();
     await tap(tester, 'Supprimer la sélection');
     await tap(tester, 'Annuler');
     expect(repository.transitions, isEmpty);

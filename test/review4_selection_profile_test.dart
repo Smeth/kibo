@@ -79,8 +79,14 @@ void main() {
           );
           await tapVisible(tester, title);
         }
-        expect(find.text('2 annonce(s) sélectionnée(s)'), findsOneWidget);
+        expect(find.text('2 annonces'), findsOneWidget);
         expect(repo.transitions, isEmpty);
+        expect(
+          tester
+              .getSize(find.byKey(const ValueKey('owned-selection-bar')))
+              .height,
+          lessThan(scale == 1 ? 100 : 180),
+        );
         if (const bool.fromEnvironment('KIBO_EXPORT_REVIEW4')) {
           await tester.runAsync(() async {
             final boundary = tester.renderObject<RenderRepaintBoundary>(
@@ -99,17 +105,19 @@ void main() {
         final delete = find.text('Supprimer la sélection');
         await tester.drag(find.byType(ListView), const Offset(0, -300));
         await tester.pumpAndSettle();
+        await tapVisible(tester, find.byTooltip('Actions de la sélection'));
         await tapVisible(tester, delete);
         expect(find.text('Retirer 2 annonces du catalogue ?'), findsOneWidget);
         expect(repo.transitions, isEmpty);
         await tester.tap(find.text('Annuler'));
         await tester.pumpAndSettle();
         expect(repo.transitions, isEmpty);
+        await tapVisible(tester, find.byTooltip('Actions de la sélection'));
         await tapVisible(tester, delete);
         await tapVisible(tester, find.text('Confirmer la sélection'));
         expect(repo.transitions, ['a', 'b']);
         expect(repo.rows.every((r) => r.status == 'archived'), isTrue);
-        expect(find.text('Supprimer la sélection'), findsNothing);
+        expect(find.byTooltip('Actions de la sélection'), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );
@@ -139,13 +147,13 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     await tapVisible(tester, title);
-    expect(find.text('1 annonce(s) sélectionnée(s)'), findsOneWidget);
+    expect(find.text('1 annonce'), findsOneWidget);
     await tapVisible(tester, title);
-    expect(find.text('Supprimer la sélection'), findsNothing);
+    expect(find.byTooltip('Actions de la sélection'), findsNothing);
     await tapVisible(tester, find.byKey(const ValueKey('select-owned-a')));
-    expect(find.text('1 annonce(s) sélectionnée(s)'), findsOneWidget);
-    await tapVisible(tester, find.text('Tout désélectionner'));
-    expect(find.text('Supprimer la sélection'), findsNothing);
+    expect(find.text('1 annonce'), findsOneWidget);
+    await tapVisible(tester, find.byTooltip('Tout désélectionner'));
+    expect(find.byTooltip('Actions de la sélection'), findsNothing);
     expect(repo.transitions, isEmpty);
   });
 
@@ -176,7 +184,7 @@ void main() {
       expect(find.text('Supprimer du catalogue ?'), findsOneWidget);
       await tester.tap(find.text('Annuler'));
       await tester.pumpAndSettle();
-      expect(find.text('Supprimer la sélection'), findsNothing);
+      expect(find.byTooltip('Actions de la sélection'), findsNothing);
       expect(repo.transitions, isEmpty);
     },
   );
@@ -212,9 +220,38 @@ void main() {
     await tapVisible(tester, title);
     tester.view.viewInsets = const FakeViewPadding(bottom: 400);
     await tester.pumpAndSettle();
-    expect(find.text('Supprimer la sélection'), findsOneWidget);
+    expect(find.byTooltip('Actions de la sélection'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'session perdue pendant le menu : aucune confirmation ni transition',
+    (tester) async {
+      final auth = await authController();
+      final repo = OwnedBatchFake();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScope(
+            controller: auth,
+            child: MyListingsPage(
+              repository: repo,
+              listings: FakeListingRepository(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.text('Sélectionner les annonces chargées'));
+      await tapVisible(tester, find.byTooltip('Actions de la sélection'));
+      repo.userId = null;
+      await auth.signOut();
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.text('Supprimer la sélection'));
+      expect(repo.transitions, isEmpty);
+      expect(find.text('Retirer 2 annonces du catalogue ?'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   for (final theme in [KiboTheme.light, KiboTheme.dark]) {
     testWidgets(
