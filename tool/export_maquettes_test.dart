@@ -20,6 +20,9 @@ import 'package:kibo/features/chat/blocked_users_page.dart';
 import 'package:kibo/features/comments/comments_page.dart';
 import 'package:kibo/features/comments/comments_repository.dart';
 import 'package:kibo/features/favorites/favorites_controller.dart';
+import 'package:kibo/features/favorites/favorites_page.dart';
+import 'package:kibo/features/favorites/guest_favorites.dart';
+import '../test/support/guest_favorites_fake.dart';
 import 'package:kibo/features/listings/listing_models.dart';
 import 'package:kibo/features/listings/listing_detail_page.dart';
 import 'package:kibo/features/listings/listing_feed.dart';
@@ -47,6 +50,53 @@ import '../test/safety/safety_widgets_test.dart' show SafetyFake;
 import '../test/profile/account_mvp_test.dart' show RecoveryFake, AccountFake;
 import '../test/profile/engagement_widgets_test.dart' show EngagementFake;
 import 'maquette_fixtures.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kibo/features/trust/help_page.dart';
+import 'package:kibo/features/trust/security_page.dart';
+import 'package:kibo/features/trust/report_target_page.dart';
+import 'package:kibo/features/trust/trust_scope.dart';
+import 'package:kibo/features/push/push_settings_page.dart';
+import 'package:kibo/features/profile/retained_history_page.dart';
+import 'package:kibo/features/listings/manage_listing_photos_page.dart';
+import 'package:kibo/features/safety/admin_page.dart';
+import '../test/listings/manage_gallery_test.dart' show GalleryFake;
+import '../test/support/listing_session.dart';
+import 'package:kibo/features/auth/phone_auth_page.dart';
+import '../test/auth/phone_auth_test.dart' show PhoneFake;
+import '../test/auth/google_auth_test.dart' show GoogleFake;
+
+class _Mfa extends Fake implements GoTrueMFAApi {
+  @override
+  Future<AuthMFAListFactorsResponse> listFactors() async =>
+      const AuthMFAListFactorsResponse(all: [], totp: [], phone: []);
+}
+
+class _PreviewAuth extends Fake implements GoTrueClient {
+  @override
+  User? get currentUser => User.fromJson(
+    jsonDecode(jsonEncode(listingTestSession()['user']))
+        as Map<String, dynamic>,
+  );
+  @override
+  Stream<AuthState> get onAuthStateChange => const Stream.empty();
+  @override
+  GoTrueMFAApi get mfa => _Mfa();
+}
+
+class _Client extends Fake implements SupabaseClient {
+  @override
+  GoTrueClient get auth => _PreviewAuth();
+}
+
+class _History implements RetainedHistoryRepository {
+  @override
+  Future<List<Map<String, dynamic>>> retained(
+    String owner,
+    String kind, {
+    String? thread,
+    int offset = 0,
+  }) async => [];
+}
 
 class _AppearanceMemory implements AppearanceStore {
   @override
@@ -218,6 +268,10 @@ Future<Uint8List> illustration() async {
 }
 
 const _boundary = ValueKey('maquette-export');
+const _output = String.fromEnvironment(
+  'KIBO_UI_EXPORT_DIR',
+  defaultValue: 'maquette',
+);
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
@@ -230,7 +284,10 @@ void main() {
   testWidgets(
     'export de tous les écrans réels en clair et sombre',
     (tester) async {
-      tester.view.physicalSize = const Size(393, 852);
+      tester.view.physicalSize = const Size(
+        int.fromEnvironment('KIBO_UI_WIDTH', defaultValue: 393) * 1.0,
+        852,
+      );
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -275,10 +332,27 @@ void main() {
       final auth = AuthController(authRepo);
       final guestRepo = RecoveryFake();
       final guest = AuthController(guestRepo);
+      final googleRepo = GoogleFake();
+      final google = AuthController(googleRepo);
+      addTearDown(google.dispose);
+      addTearDown(googleRepo.dispose);
       final appearance = AppearanceController(_AppearanceMemory());
       final favoriteRepo = FakeFavoritesRepository(listings: listings)
         ..saved = {'listing-a'};
       final favorites = FavoritesController(favoriteRepo);
+      final localFavorites = GuestFavoritesController(
+        MemoryGuestFavoritesStore()..saved = {'listing-a'},
+        listings,
+      );
+      await localFavorites.initialize();
+      final transferFavorites = FavoritesController(
+        favoriteRepo,
+        guest: localFavorites,
+      );
+      transferFavorites.bindUser('test-user-a');
+      await transferFavorites.refresh();
+      addTearDown(transferFavorites.dispose);
+      addTearDown(localFavorites.dispose);
       final seller = PreviewSeller();
       final launcher = PreviewLauncher();
       final comments = PreviewComments()
@@ -330,6 +404,7 @@ void main() {
         draftStore: MemoryListingDraftStore(),
       );
       final entries = <Map<String, String>>[];
+      final layoutErrors = <String>[];
       Future<void> settle() async {
         for (var cycle = 0; cycle < 3; cycle++) {
           await tester.pump(const Duration(milliseconds: 100));
@@ -349,6 +424,9 @@ void main() {
         bool scaffold = false,
         Future<void> Function()? prepare,
       }) async {
+        const only = String.fromEnvironment('KIBO_UI_ONLY');
+        if (only.isNotEmpty && !only.split(',').any(id.startsWith)) return;
+        tester.view.resetViewInsets();
         debugPrint('MAQUETTE $id ${brightness.name}');
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
@@ -362,14 +440,17 @@ void main() {
         final navigator = GlobalKey<NavigatorState>();
         final routed = !scaffold && body is! KiboHomePage;
         Widget screen = scaffold ? Scaffold(body: SafeArea(child: body)) : body;
-        screen = AuthScope(
-          controller: signedIn ? auth : guest,
-          child: FavoritesScope(
-            controller: favorites,
-            child: ListingPhotoScope(
-              repository: photos,
-              picker: photos,
-              child: screen,
+        screen = TrustScope(
+          clientProvider: () => _Client(),
+          child: AuthScope(
+            controller: signedIn ? auth : guest,
+            child: FavoritesScope(
+              controller: favorites,
+              child: ListingPhotoScope(
+                repository: photos,
+                picker: photos,
+                child: screen,
+              ),
             ),
           ),
         );
@@ -380,6 +461,18 @@ void main() {
               key: _boundary,
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(
+                      const int.fromEnvironment(
+                            'KIBO_UI_TEXT_SCALE',
+                            defaultValue: 100,
+                          ) /
+                          100,
+                    ),
+                  ),
+                  child: child!,
+                ),
                 theme: KiboTheme.light,
                 darkTheme: KiboTheme.dark,
                 themeMode: appearance.mode,
@@ -405,9 +498,12 @@ void main() {
           await prepare();
           await settle();
         }
-        expect(tester.takeException(), isNull, reason: id);
+        final exception = tester.takeException();
+        if (exception != null) {
+          layoutErrors.add('$id ${brightness.name}: $exception');
+        }
         final mode = brightness == Brightness.dark ? 'sombre' : 'clair';
-        final path = 'maquette/$mode/$id.png';
+        final path = '$_output/$mode/$id.png';
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(_boundary),
         );
@@ -426,7 +522,10 @@ void main() {
         });
       }
 
-      for (final brightness in [Brightness.light, Brightness.dark]) {
+      for (final brightness in [
+        Brightness.light,
+        if (!const bool.fromEnvironment('KIBO_UI_LIGHT_ONLY')) Brightness.dark,
+      ]) {
         await shot('01-accueil', 'Accueil', home(), brightness);
         await shot(
           '02-recherche',
@@ -790,12 +889,228 @@ void main() {
             find.text('Bonjour, votre annonce est-elle disponible ?'),
           ),
         );
+        await shot(
+          '40-aide',
+          'Aide et confidentialité',
+          const HelpPage(),
+          brightness,
+        );
+        await shot(
+          '41-securite',
+          'Sécurité du compte',
+          SecurityPage(client: _Client()),
+          brightness,
+        );
+        await shot(
+          '42-push',
+          'Notifications du téléphone',
+          PushSettingsPage(client: _Client()),
+          brightness,
+        );
+        await shot(
+          '43-signaler-profil',
+          'Signaler un profil',
+          ReportTargetPage(
+            client: _Client(),
+            kind: 'profile',
+            target: 'fixture',
+          ),
+          brightness,
+        );
+        await shot(
+          '44-signaler-message',
+          'Signaler un message',
+          ReportTargetPage(
+            client: _Client(),
+            kind: 'message',
+            target: 'fixture',
+          ),
+          brightness,
+        );
+        await shot(
+          '45-archives',
+          'Échanges conservés',
+          RetainedHistoryPage(auth: auth, repository: _History()),
+          brightness,
+        );
+        await shot(
+          '46-archive-conversation',
+          'Conversation archivée',
+          RetainedHistoryPage(
+            auth: auth,
+            repository: _History(),
+            thread: 'fixture',
+          ),
+          brightness,
+        );
+        await shot(
+          '47-galerie',
+          'Gestion des photos',
+          ManageListingPhotosPage(
+            listing: 'listing-a',
+            owner: 'test-user-a',
+            repository: GalleryFake(),
+            picker: photos,
+          ),
+          brightness,
+        );
+        await shot(
+          '48-administration',
+          'Administration',
+          AdminPage(
+            auth: auth,
+            safety: safety,
+            accounts: engagement,
+            onReports: () async {},
+            onAccounts: () async {},
+          ),
+          brightness,
+        );
+        await shot(
+          '49-gestion-demandes',
+          'Demandes opérateur',
+          EngagementPage(
+            controller: auth,
+            repository: engagement,
+            operatorOnly: true,
+          ),
+          brightness,
+        );
+        await shot(
+          '50-telephone-prepare',
+          'Connexion téléphone préparée, désactivée en pilote',
+          PhoneAuthPage(auth: guest, repository: PhoneFake()),
+          brightness,
+          signedIn: false,
+        );
+        await shot(
+          '51-profil-bas',
+          'Profil et déconnexion',
+          home(),
+          brightness,
+          prepare: () async {
+            await tester.tap(find.text('Profil').last);
+            await settle();
+            await tester.drag(
+              find.byType(SingleChildScrollView).last,
+              const Offset(0, -1600),
+            );
+          },
+        );
+        await shot(
+          '52-aide-bas',
+          'Aide, conservation et règles',
+          const HelpPage(),
+          brightness,
+          prepare: () async {
+            await tester.drag(
+              find.byType(Scrollable).first,
+              const Offset(0, -2200),
+            );
+          },
+        );
+        await shot(
+          '53-clavier-connexion',
+          'Connexion avec clavier',
+          AuthPage(controller: guest),
+          brightness,
+          signedIn: false,
+          prepare: () async {
+            tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+            await tester.showKeyboard(find.byType(TextFormField).last);
+            await tester.ensureVisible(find.byType(TextFormField).last);
+          },
+        );
+        await shot(
+          '54-clavier-chat',
+          'Conversation avec clavier',
+          ChatPage(repository: chats, ownerId: 'test-user-a', thread: thread),
+          brightness,
+          prepare: () async {
+            tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+            await tester.showKeyboard(find.byType(TextFormField));
+          },
+        );
+        await shot(
+          '55-publication-bas',
+          'Publication et brouillon',
+          PublishListingPage(
+            repository: listings,
+            draftStore: MemoryListingDraftStore(),
+          ),
+          brightness,
+          scaffold: true,
+          prepare: () async {
+            await tester.drag(
+              find.byType(Scrollable).first,
+              const Offset(0, -5000),
+            );
+          },
+        );
+        await shot(
+          '56-modification-bas',
+          'Modification et sauvegarde',
+          EditListingPage(
+            listing: _Owned.row,
+            repository: _Owned(),
+            listings: listings,
+          ),
+          brightness,
+          prepare: () async {
+            await tester.drag(
+              find.byType(Scrollable).first,
+              const Offset(0, -5000),
+            );
+          },
+        );
+        await shot(
+          '57-compte-bas',
+          'Demande de suppression',
+          AccountSettingsPage(
+            controller: auth,
+            repository: AccountFake(),
+            chats: chats,
+          ),
+          brightness,
+          prepare: () async {
+            await tester.drag(
+              find.byType(Scrollable).first,
+              const Offset(0, -5000),
+            );
+          },
+        );
+        await shot(
+          '58-connexion-google',
+          'Connexion avec Google',
+          AuthPage(controller: google),
+          brightness,
+          signedIn: false,
+        );
+        await shot(
+          '59-inscription-google',
+          'Inscription avec Google',
+          AuthPage(controller: google, registration: true),
+          brightness,
+          signedIn: false,
+        );
+        await shot(
+          '60-transfert-favoris',
+          'Transfert des favoris locaux',
+          FavoritesScope(
+            controller: transferFavorites,
+            child: FavoritesPage(listings: listings),
+          ),
+          brightness,
+          scaffold: true,
+        );
       }
+      tester.view.resetViewInsets();
       await tester.pumpWidget(const SizedBox());
       await settle();
+      expect(layoutErrors, isEmpty, reason: layoutErrors.join("\n"));
       await tester.runAsync(() async {
         final html = StringBuffer(
-          '<!doctype html><html lang="fr"><meta charset="utf-8"><title>KIBO · Maquettes</title><style>body{font:16px system-ui;background:#101a16;color:#e7f0eb;margin:32px}a{color:#6ddcb2}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}img{width:100%;border-radius:24px}article{max-width:393px}header{margin-bottom:32px}</style><header><h1>KIBO · Références visuelles</h1><p>Vrais écrans Flutter · fixtures fictives · clair et sombre · 393 × 852</p></header><main>',
+          '<!doctype html><html lang="fr"><meta charset="utf-8"><title>KIBO · Maquettes</title><style>body{font:16px system-ui;background:#101a16;color:#e7f0eb;margin:32px}a{color:#6ddcb2}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}img{width:100%;border-radius:24px}article{max-width:393px}header{margin-bottom:32px}</style><header><h1>KIBO · Références visuelles</h1><p>Vrais écrans Flutter · fixtures fictives · clair et sombre · dimensions et texte : voir manifest.json</p></header><main>',
         );
         for (final entry in entries) {
           html.write(
@@ -803,10 +1118,25 @@ void main() {
           );
         }
         html.write('</main></html>');
-        await File('maquette/index.html').writeAsString(html.toString());
-        await File('maquette/manifest.json').writeAsString(
+        await File('$_output/index.html').writeAsString(html.toString());
+        await File('$_output/manifest.json').writeAsString(
           const JsonEncoder.withIndent('  ').convert({
-            'viewport': {'width': 393, 'height': 852, 'pixelRatio': 2},
+            'viewport': {
+              'width':
+                  const int.fromEnvironment(
+                    'KIBO_UI_WIDTH',
+                    defaultValue: 393,
+                  ) *
+                  1.0,
+              'height': 852,
+              'pixelRatio': 2,
+              'textScale':
+                  const int.fromEnvironment(
+                    'KIBO_UI_TEXT_SCALE',
+                    defaultValue: 100,
+                  ) /
+                  100,
+            },
             'fixture': true,
             'screens': entries,
           }),
@@ -821,9 +1151,9 @@ void main() {
             '| ${entry['title']} | [PNG](clair/${entry['id']}.png) | [PNG](sombre/${entry['id']}.png) |',
           );
         }
-        await File('maquette/CATALOGUE.md').writeAsString(catalogue.toString());
+        await File('$_output/CATALOGUE.md').writeAsString(catalogue.toString());
       });
     },
-    timeout: const Timeout(Duration(minutes: 8)),
+    timeout: const Timeout(Duration(minutes: 12)),
   );
 }

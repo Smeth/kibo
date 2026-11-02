@@ -1,3 +1,13 @@
+# Revue UI/UX de tous les parcours — 2026-11-02
+
+Revue des widgets réels sur fixtures : catalogue étendu aux pages aide, sécurité, alertes Android, signalements de profils/messages, archives, galerie et administration ; bas des formulaires, fenêtres et clavier inclus. 60 vues/états inventoriés, dont les variantes Google, le consentement de transfert des favoris et l'écran téléphone préparé (OTP toujours désactivé). [Couverture, corrections et commandes](UIUX_AUDIT_20261102.md).
+
+Marges de formulaire harmonisées à 16 px, protection de la zone système basse, titres adaptés à la grande police, déconnexion déplacée en fin de profil, interrupteurs alignés, filtres d'archives repliables, compteurs espacés et cartes de favoris adaptées aux écrans étroits. Galerie de gestion affichant la photo entière ; hiérarchie aide/sécurité/push et retours d'échec des liens d'aide améliorés. Aucun changement Supabase ni activation de fournisseur.
+
+Contrôles : **454 tests Flutter standard + 454 avec photos réussis**, analyse stricte sans anomalie, formatage de 158 fichiers sans changement et diff vérifié. Trois nouveaux tests couvrent titre long, filtre d'archives et action de formulaire avec clavier. **120 rendus standard et 60 à 320 px/texte 200 %** consolidés, sans erreur Flutter. Le cas de transfert des favoris a été ajouté et corrigé après la revue physique ; aucune confirmation de transfert réel effectuée.
+
+Code applicatif conservé dans `520be4f`. Dernière version installée et relancée sur TECNO CK6n, processus 18878 et premier plan confirmés ; build profile 47,5 s, installation 6,7 s, données conservées. Accueil/favoris/profil contrôlés physiquement, application laissée sur l'accueil. Le bundle signé antérieur ne contient pas ce lot UI/UX et doit être reconstruit avant une nouvelle diffusion.
+
 # Mise en place MVP hors OTP — 2026-11-02
 
 **Conservation effectuée : commit applicatif 385ad5f poussé sur origin/main**, 70 fichiers, secrets locaux et signatures exclus. La licence Manrope a ensuite été ajoutée au site public et sa nouvelle publication confirmée, source dédiée `35635670a10bf91a0f842b59fb0bef754bdbed4c`. Le jeton temporaire Sites a été utilisé après accord précis, uniquement dans le helper officiel et sans journalisation. Les contrôles GitHub du lot applicatif sont distincts des preuves locales ci-dessous.

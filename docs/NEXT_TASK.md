@@ -1,3 +1,9 @@
+## Reprise après revue UI/UX — 2026-11-02
+
+Lot UI/UX terminé, code applicatif `520be4f` : corrections de marges, titres, profil, compteurs, cartes, formulaires, consentement de transfert et galerie. Revue de 60 vues/états sur fixtures, 120 rendus clair/sombre et 60 rendus en texte agrandi ; [rapport écran par écran](UIUX_AUDIT_20261102.md). 454 tests standard et 454 photos réussis, analyse conforme. Dernière version installée sur TECNO, processus 18878 et premier plan confirmés ; données conservées, accueil/favoris/profil contrôlés physiquement. L'application reste sur l'accueil.
+
+Après ce lot, poursuivre la recette réelle Google/deux comptes, l'enregistrement personnel TOTP, Firebase et la sauvegarde externe de la signature ci-dessous. L'ancien bundle pilote signé précède les corrections UI/UX ; le reconstruire avant une nouvelle diffusion. Ne pas activer l'OTP et conserver le catalogue de recette visible comme demandé.
+
 ## Reprise après mise en place MVP — 2026-11-02
 
 Code applicatif conservé et poussé : `385ad5f`. Pages publiques avec licence Manrope publiées, copie source dans `web/help/`. Aucun fichier de signature ni configuration locale suivi par Git.
