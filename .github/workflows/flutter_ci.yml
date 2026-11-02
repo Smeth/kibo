@@ -90,3 +90,14 @@ jobs:
           node-version: '22'
       - name: Run isolated worker tests
         run: node --test test/audit/account_deletion_worker_test.mjs
+
+  edge-fixtures:
+    name: Edge function fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: '2.9.6'
+      - name: Run isolated Edge tests
+        run: deno test --allow-env --allow-read test/audit/ supabase/functions/kibo-upload-listing-photo/index_test.ts

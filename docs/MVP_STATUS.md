@@ -1,5 +1,13 @@
 # État consolidé — 2026-11-02
 
+## Actualisation : mise en place des quatre volets
+
+Recherche française corrigée et vérifiée en visiteur ; contrats galerie et suppression déployés, expiration 15 jours active, sans suppression réelle de recette. Signalement des messages/profils, badge serveur du compte officiel, contrôle de rôle admin et session MFA renforcée après inscription TOTP déployés. Aide/confidentialité publiques : https://kibo-assistance-2026.stonytern8.chatgpt.site. Signature locale préparée et bundle Android sans assets fictifs construit ; aucune publication Play Store. Serveur/client push préparés mais désactivés sans Firebase. **OTP SMS exclu et désactivé.** Catalogue de recette maintenu visible sur instruction explicite. Voir [preuves et limites actuelles](ROLLOUT_MVP_20261102.md) ; les limites et compteurs des sections suivantes sont historiques.
+
+Restent des étapes qui exigent une participation/ressource extérieure : TOTP à enregistrer par le propriétaire, Firebase à créer/configurer, sauvegarde externe de signature et canal pilote, recette Google/deux appareils/réseau dégradé et suppression réelle d’un compte dédié autorisé. Le pilote n’est pas déclaré prêt à une diffusion publique large.
+
+---
+
 Le MVP comprend catalogue, publication, favoris visiteurs/compte, profil vendeur, contacts, chat, commentaires, notifications internes et administration mobile. Le dernier audit a validé 443 tests standard ; ses preuves serveur datent du 2 novembre et ne sont pas rejouées lors de la consolidation Git. Voir [audit](AUDIT_ETAT_ACTUEL_2026_11_02.md).
 
 Consolidation validée localement : sources Flutter, assets, tests, scripts, documentation, migrations historiques et propositions sont conservés ensemble. Les configurations locales et clés de signature restent ignorées. CI étendue aux chemins assets/tool/scripts/supabase, aux variantes photos et aux fixtures Node du worker. **447 tests standard + 447 avec photos + 19 tests Node réussis**, analyse stricte et format conformes. Aucun déploiement automatique.

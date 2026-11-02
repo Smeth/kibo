@@ -1,4 +1,4 @@
-param([int]$Port = 55473, [ValidateSet('Owner','Contacts','Chat','Safety','Mvp','Engagement','History','MessageActions','OptionalPrice','Discovery','Media','Deletion')][string]$Suite = 'Owner')
+param([int]$Port = 55473, [ValidateSet('Owner','Contacts','Chat','Safety','Mvp','Engagement','History','MessageActions','OptionalPrice','Discovery','Media','Deletion','Trust')][string]$Suite = 'Owner')
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 $pgBin = 'C:\Program Files\PostgreSQL\13\bin'
@@ -49,7 +49,7 @@ try {
     if ($pgStart.ExitCode -ne 0) { throw 'pg_ctl start failed' }
     $started = $true
     Invoke-FixtureSql 'test/sql/direct_publication_fixture.sql'
-    if ($Suite -in @('Safety','Mvp','Engagement','History','MessageActions','Deletion')) {
+    if ($Suite -in @('Safety','Mvp','Engagement','History','MessageActions','Deletion','Trust')) {
         Invoke-FixtureSql 'supabase/migrations/20261031050000_direct_listing_publication.sql'
         Invoke-FixtureSql 'test/sql/owner_management_real_guards_fixture.sql'
         Invoke-FixtureSql 'supabase/proposals/owner_management_01_enum.sql'
@@ -58,17 +58,28 @@ try {
         Invoke-FixtureSql 'test/sql/safety_fixture.sql'
         Invoke-FixtureSql 'supabase/proposals/safety_workflows.sql'
         Invoke-FixtureSql 'test/sql/safety_assertions.sql'
-        if($Suite -in @('Mvp','Engagement','History','MessageActions','Deletion')) {
+        if($Suite -in @('Mvp','Engagement','History','MessageActions','Deletion','Trust')) {
             Invoke-FixtureSql 'test/sql/mvp_extensions_fixture.sql'
             Invoke-FixtureSql 'supabase/proposals/mvp_chat_account.sql'
             Invoke-FixtureSql 'test/sql/mvp_extensions_assertions.sql'
             Invoke-FixtureSql 'supabase/proposals/mvp_chat_hardening.sql'
             Invoke-FixtureSql 'test/sql/mvp_hardening_assertions.sql'
             Invoke-FixtureSql 'supabase/proposals/mvp_block_lookup_index.sql'
-            if ($Suite -eq 'MessageActions') {
+            if ($Suite -in @('MessageActions','Trust')) {
                 Invoke-FixtureSql 'supabase/proposals/chat_message_actions.sql'
                 Invoke-FixtureSql 'test/sql/message_actions_assertions.sql'
                 Write-Output 'Message actions SQL checks passed.'
+                if ($Suite -eq 'Trust') {
+                    Invoke-FixtureSql 'test/sql/trust_fixture.sql'
+                    Invoke-FixtureSql 'supabase/proposals/trust_reports_official.sql'
+                    Invoke-FixtureSql 'test/sql/trust_assertions.sql'
+                    Invoke-FixtureSql 'supabase/proposals/push_notifications.sql'
+                    Invoke-FixtureSql 'test/sql/push_assertions.sql'
+                    Invoke-FixtureSql 'test/sql/admin_mfa_fixture.sql'
+                    Invoke-FixtureSql 'supabase/proposals/admin_mfa_policy.sql'
+                    Invoke-FixtureSql 'test/sql/admin_mfa_assertions.sql'
+                    Write-Output 'Trust reports, official identity and isolation checks passed.'
+                }
             }
             if ($Suite -eq 'History') {
                 Invoke-FixtureSql 'supabase/proposals/retained_history.sql'
@@ -93,9 +104,12 @@ try {
                     Invoke-FixtureSql 'test/sql/discovery_assertions.sql'
                     Invoke-FixtureSql 'test/sql/media_fixture.sql'
                     Invoke-FixtureSql 'supabase/proposals/listing_media_management.sql'
+                    Invoke-FixtureSql 'supabase/proposals/media_path_constraints.sql'
                     Invoke-FixtureSql 'supabase/proposals/retained_history.sql'
                     Invoke-FixtureSql 'test/sql/deletion_fixture.sql'
                     Invoke-FixtureSql 'supabase/proposals/account_deletion_execution.sql'
+                    Invoke-FixtureSql 'supabase/proposals/request_guard_anon_safe.sql'
+                    Invoke-FixtureSql 'test/sql/request_guard_scope_assertions.sql'
                     Invoke-FixtureSql 'test/sql/deletion_assertions.sql'
                     Write-Output 'Deletion freeze, archive, purge, resume, ACL and verification checks passed.'
                 }
@@ -114,7 +128,10 @@ try {
         if ($Suite -eq 'Media') {
             Invoke-FixtureSql 'test/sql/media_fixture.sql'
             Invoke-FixtureSql 'supabase/proposals/listing_media_management.sql'
+                    Invoke-FixtureSql 'supabase/proposals/media_path_constraints.sql'
             Invoke-FixtureSql 'test/sql/media_assertions.sql'
+            Invoke-FixtureSql 'supabase/proposals/catalogue_fixture_scope.sql'
+            Invoke-FixtureSql 'test/sql/catalogue_fixture_scope_assertions.sql'
             Write-Output 'Media atomic editing, replay, conflict and RLS checks passed.'
         }
     } elseif ($Suite -eq 'OptionalPrice') {

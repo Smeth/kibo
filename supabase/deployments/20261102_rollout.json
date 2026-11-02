@@ -1,0 +1,62 @@
+{
+  "project": "KIBO",
+  "date": "2026-11-02",
+  "note": "Applied individually after explicit approvals. Historical invoker change is superseded by the anon-safe guard. No account deletion or fixture-hiding policy was executed.",
+  "migrations": [
+    {
+      "version": "20261102174041",
+      "name": "kibo_discovery_search_v2",
+      "source": "supabase/proposals/discovery_search_v2.sql"
+    },
+    {
+      "version": "20261102174054",
+      "name": "kibo_listing_media_management",
+      "source": "supabase/proposals/listing_media_management.sql"
+    },
+    {
+      "version": "20261102174206",
+      "name": "kibo_retained_history",
+      "source": "supabase/proposals/retained_history.sql"
+    },
+    {
+      "version": "20261102174500",
+      "name": "kibo_account_deletion_execution",
+      "source": "supabase/proposals/account_deletion_execution.sql"
+    },
+    {
+      "version": "20261102174612",
+      "name": "kibo_retained_history_expiry",
+      "source": "supabase/proposals/account_deletion_expiry_cron.sql"
+    },
+    {
+      "version": "20261102175606",
+      "name": "kibo_trust_reports_official",
+      "source": "supabase/proposals/trust_reports_official.sql"
+    },
+    {
+      "version": "20261102175633",
+      "name": "kibo_admin_mfa_live_role",
+      "source": "supabase/proposals/admin_mfa_policy.sql"
+    },
+    {
+      "version": "20261102180329",
+      "name": "kibo_request_guard_invoker",
+      "source": "supabase/proposals/request_guard_invoker.sql"
+    },
+    {
+      "version": "20261102180951",
+      "name": "kibo_media_stable_path_constraints",
+      "source": "supabase/proposals/media_path_constraints.sql"
+    },
+    {
+      "version": "20261102181000",
+      "name": "kibo_push_notifications_disabled",
+      "source": "supabase/proposals/push_notifications.sql"
+    },
+    {
+      "version": "20261102182556",
+      "name": "kibo_request_guard_anon_safe",
+      "source": "supabase/proposals/request_guard_anon_safe.sql"
+    }
+  ]
+}

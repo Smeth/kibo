@@ -1,5 +1,7 @@
 # Préparation du pilote Android — 2026-11-01
 
+**Actualisation du 2 novembre :** version 1.0.0+2, clé locale RSA 3072 créée et certificat vérifié, bundle pilote signé construit sans assets de catalogue fictif. Scripts `Prepare-AndroidSigning.ps1` et `Build-AndroidPilot.ps1`. La clé et le mot de passe ne sont pas versionnés ; la copie DPAPI n’est pas une sauvegarde externe. Aucun upload Play Store, ni remplacement de la signature du TECNO. [État du lot et limites restantes](ROLLOUT_MVP_20261102.md). Les paragraphes suivants conservent l’historique de préparation.
+
 Application `com.kibo.kibo` conservée pour permettre la mise à jour du TECNO sans effacer ses données. Libellé Android : KIBO. Aucune publication Play Store ni distribution à des tiers autorisée par ce lot.
 
 ## Signature

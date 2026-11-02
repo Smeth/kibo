@@ -38,6 +38,13 @@ export async function handleDeletion(
       !Number.isFinite(signed) || Date.now() - signed > 10 * 60 * 1000 ||
       signed > Date.now() + 60000
     ) return reply(403, { error: "fresh_login_required" });
+    const permission = await fetcher(`${url}/rest/v1/rpc/kibo_can_moderate`, {
+      method: "POST", headers: { apikey: anon, Authorization: authorization, "Content-Type": "application/json" },
+      body: "{}",
+    });
+    if (!permission.ok || await permission.json() !== true) {
+      return reply(403, { error: "admin_mfa_required" });
+    }
     if (Number(req.headers.get("content-length")) > 1024) {
       return reply(413, { error: "size" });
     }

@@ -1,3 +1,8 @@
 {
-  "SUPABASE_URL": "https://fcfmfpywpurrvppxdltm.supabase.co"
+  "SUPABASE_URL": "https://fcfmfpywpurrvppxdltm.supabase.co",
+  "KIBO_LISTING_PHOTOS_ENABLED": true,
+  "KIBO_DISCOVERY_V2_ENABLED": true,
+  "KIBO_MEDIA_MANAGEMENT_ENABLED": true,
+  "KIBO_ACCOUNT_DELETION_ENABLED": true,
+  "KIBO_PHONE_AUTH_ENABLED": false
 }

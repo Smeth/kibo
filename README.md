@@ -6,6 +6,8 @@ KIBO est une marketplace congolaise de produits et services. Le lancement initia
 
 ## État du projet
 
+Mise à niveau du 2 novembre : recherche française, galerie et suppression administrative déployées ; badge officiel, signalements étendus et sécurité TOTP préparée côté application/contrôlée côté serveur. [Bilan réel et limites](docs/ROLLOUT_MVP_20261102.md). [Aide, confidentialité et suppression de compte](https://kibo-assistance-2026.stonytern8.chatgpt.site). Push désactivés tant que Firebase n’est pas configuré ; OTP SMS exclu.
+
 Point de reprise du 2 novembre 2026 : [état consolidé](docs/MVP_STATUS.md), [audit détaillé](docs/AUDIT_ETAT_ACTUEL_2026_11_02.md) et [prochaine tâche](docs/NEXT_TASK.md). Les paragraphes ci-dessous conservent l’historique. La CI couvre les tests avec/sans photos et les fixtures Node du worker ; elle ne déploie rien.
 
 Compteur global Messages, préférences de notifications, suivi opérateur des demandes de compte et reprise des photos de brouillons : [état vérifié](docs/ENGAGEMENT_ACCOUNT_WORKFLOWS.md). Préparation du [pilote Android](docs/ANDROID_PILOT.md), [recette à deux comptes](docs/RECETTE_MVP_DEUX_COMPTES.md) et [procédure de suppression à valider avant activation](docs/ACCOUNT_DELETION_RUNBOOK.md). Les sections suivantes conservent l’historique des premiers lots ; PROGRESS fait foi pour les derniers résultats.

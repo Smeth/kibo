@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../push/push_registration.dart';
 
 import '../../core/config/auth_callback.dart';
 import '../profile/profile_validation.dart';
@@ -162,6 +163,13 @@ class SupabaseAuthRepository
 
   @override
   Future<void> signOut() async {
+    if (pushConfigured) {
+      try {
+        await PushRegistration(client).disable();
+      } catch (_) {
+        /* Signing out remains possible offline. */
+      }
+    }
     try {
       await client.auth.signOut(scope: SignOutScope.local);
     } finally {

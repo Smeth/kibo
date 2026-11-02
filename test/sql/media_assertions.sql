@@ -47,3 +47,21 @@ DO $$ BEGIN
  IF (SELECT count(*) FROM public.kibo_photo_cleanup_queue())<>0 THEN RAISE EXCEPTION 'Other cleanup exposed';END IF;
 END $$;
 ROLLBACK;
+
+-- Real legacy paths must remain valid after changing only their display order.
+BEGIN;
+INSERT INTO public.listings(id,seller_id,category_id,title,description,price,status) VALUES
+('10000000-0000-4000-8000-000000000002','11111111-1111-4111-8111-111111111111','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','Galerie existante','Description de galerie',100,'published');
+INSERT INTO public.kibo_listing_photos(listing_id,owner_id,position,path)
+SELECT '10000000-0000-4000-8000-000000000002','11111111-1111-4111-8111-111111111111',i,
+ '11111111-1111-4111-8111-111111111111/10000000-0000-4000-8000-000000000002/'||i||'-'||repeat(CASE WHEN i=0 THEN 'a' ELSE 'b' END,64)||'.jpg'
+FROM generate_series(0,1)i;
+INSERT INTO storage.objects(bucket_id,name,metadata) SELECT 'kibo-listing-photos',path,'{"mimetype":"image/jpeg","size":100}' FROM public.kibo_listing_photos WHERE listing_id='10000000-0000-4000-8000-000000000002';
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',true);
+SELECT public.kibo_prepare_photo_edit('10000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000003',0,'{}');
+SELECT public.kibo_apply_photo_edit('10000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000003',0,
+ ARRAY['11111111-1111-4111-8111-111111111111/10000000-0000-4000-8000-000000000002/1-'||repeat('b',64)||'.jpg',
+ '11111111-1111-4111-8111-111111111111/10000000-0000-4000-8000-000000000002/0-'||repeat('a',64)||'.jpg']);
+DO $$ BEGIN IF (SELECT path FROM public.kibo_listing_photos WHERE listing_id='10000000-0000-4000-8000-000000000002' AND position=0) NOT LIKE '%/1-%' THEN RAISE EXCEPTION 'Legacy reorder failed';END IF;END $$;
+ROLLBACK;

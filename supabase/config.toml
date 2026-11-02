@@ -4,3 +4,15 @@ project_id = "kibo"
 [functions.kibo-upload-listing-photo]
 verify_jwt = true
 entrypoint = "./functions/kibo-upload-listing-photo/index.ts"
+
+[functions.kibo-manage-listing-photos]
+verify_jwt = true
+entrypoint = "./functions/kibo-manage-listing-photos/index.ts"
+
+[functions.kibo-delete-account]
+verify_jwt = true
+entrypoint = "./functions/kibo-delete-account/index.ts"
+
+[functions.kibo-send-push]
+verify_jwt = true
+entrypoint = "./functions/kibo-send-push/index.ts"

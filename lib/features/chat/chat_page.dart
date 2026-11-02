@@ -1,4 +1,6 @@
 import 'dart:async';
+import '../trust/report_target_page.dart';
+import '../trust/trust_scope.dart';
 import 'package:flutter/material.dart';
 import '../../core/widgets/kibo_state_panel.dart';
 import '../auth/auth_controller.dart';
@@ -689,6 +691,14 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             return MessageBubble(
               message: message,
               mine: message.senderId == widget.ownerId,
+              onReport:
+                  TrustScope.maybeClient(context) != null &&
+                      message.senderId != widget.ownerId &&
+                      !message.senderDeleted &&
+                      message.deletedAt == null &&
+                      !_readOnly
+                  ? () => openTargetReport(context, 'message', message.id)
+                  : null,
               onEdit: canChange ? () => _changeMessage(message) : null,
               onDelete: canChange
                   ? () => _changeMessage(message, delete: true)

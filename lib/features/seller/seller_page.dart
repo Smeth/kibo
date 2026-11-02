@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../trust/official_badge.dart';
+import '../trust/report_target_page.dart';
+import '../trust/trust_scope.dart';
 import '../auth/auth_controller.dart';
 import 'seller_repository.dart';
 import '../safety/trading_safety_notice.dart';
@@ -114,7 +117,19 @@ class _SellerPageState extends State<SellerPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Profil du vendeur')),
+    appBar: AppBar(
+      title: const Text('Profil du vendeur'),
+      actions: [
+        if (TrustScope.maybeClient(context) != null &&
+            _owner != widget.sellerId)
+          IconButton(
+            tooltip: 'Signaler ce profil',
+            icon: const Icon(Icons.flag_outlined),
+            onPressed: () =>
+                openTargetReport(context, 'profile', widget.sellerId),
+          ),
+      ],
+    ),
     body: FutureBuilder<PublicSeller?>(
       future: _profile,
       builder: (context, snapshot) {
@@ -144,6 +159,7 @@ class _SellerPageState extends State<SellerPage> {
         return KiboFormListView(
           padding: const EdgeInsets.all(16),
           children: [
+            OfficialBadge(userId: widget.sellerId),
             Text(seller.name, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             Text(seller.city),

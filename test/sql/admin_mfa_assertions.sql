@@ -1,0 +1,11 @@
+BEGIN;
+SELECT set_config('request.jwt.claim.sub','33333333-3333-4333-8333-333333333333',true);
+SELECT set_config('request.jwt.claims','{"app_metadata":{"role":"admin"},"aal":"aal1"}',true);
+DO $$ BEGIN IF NOT private.is_admin() THEN RAISE EXCEPTION 'Unenrolled admin locked out';END IF;END $$;
+INSERT INTO auth.mfa_factors VALUES('33333333-3333-4333-8333-333333333333','verified');
+DO $$ BEGIN IF private.is_admin() THEN RAISE EXCEPTION 'MFA bypass with aal1';END IF;END $$;
+SELECT set_config('request.jwt.claims','{"app_metadata":{"role":"admin"},"aal":"aal2"}',true);
+DO $$ BEGIN IF NOT private.is_admin() THEN RAISE EXCEPTION 'Verified MFA session refused';END IF;END $$;
+UPDATE auth.users SET raw_app_meta_data='{"role":"user"}';
+DO $$ BEGIN IF private.is_admin() THEN RAISE EXCEPTION 'Stale admin JWT accepted';END IF;END $$;
+ROLLBACK;

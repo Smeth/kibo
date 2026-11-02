@@ -1,5 +1,7 @@
 # Recherche, photos et suppression de compte — 2026-11-02
 
+**Actualisation : contrats et fonctions déployés après accords précis le 2 novembre.** La recherche, la galerie et la suppression administrative sont maintenant activées dans la configuration publique de build et par défaut dans le lanceur Android. Correction supplémentaire de la vraie contrainte de chemins photo incluse ; aucune suppression réelle exécutée. Voir [déploiement, preuves et limites](ROLLOUT_MVP_20261102.md). Les mentions « non déployé » et options désactivées ci-dessous décrivent la préparation historique.
+
 ## Périmètre demandé
 
 Travail local sur `main`, changements préexistants préservés et inventoriés dans `.dart_tool/lot-search-photo-delete-status.txt`. Aucun commit/push. Les propositions SQL et fonctions Edge ci-dessous ne sont pas encore déployées. Aucune suppression de compte réel n’est autorisée comme recette par cette demande.

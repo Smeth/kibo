@@ -237,6 +237,49 @@ void main() {
     expect(find.text('Privé'), findsNothing);
     expect(repo.sends, 1);
   });
+  testWidgets(
+    'passer d’une annonce à un message réinitialise la décision et exclut le masquage',
+    (tester) async {
+      repo.admin = true;
+      repo.reportRows = [
+        repo.reportRows.first,
+        const ContentReport(
+          id: 'message-report',
+          reason: 'Message abusif fictif',
+          status: 'pending',
+          messageId: 'message-fixture',
+        ),
+      ];
+      await open(tester, SafetyScreen.moderation);
+      await tester.tap(find.text('Motif fictif'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byType(DropdownButtonFormField<String>).last,
+      );
+      await tester.tap(find.byType(DropdownButtonFormField<String>).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Masquer le contenu').last);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Retour aux signalements'),
+        -250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Retour aux signalements'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Message abusif fictif'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byType(DropdownButtonFormField<String>).last,
+      );
+      await tester.tap(find.byType(DropdownButtonFormField<String>).last);
+      await tester.pumpAndSettle();
+      expect(find.text('Masquer le contenu'), findsNothing);
+      expect(find.text('Rejeter le signalement'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('moderation refuse le membre ordinaire sans lire la file', (
     tester,
   ) async {

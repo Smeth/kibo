@@ -1,4 +1,6 @@
-# Suppression de compte — procédure préparée, non activée
+# Suppression de compte — procédure et historique
+
+**Actualisation du 2 novembre 2026 :** contrat et fonction d’exécution déployés après accord explicite, conservation privée de 15 jours et expiration horaire actives. La suppression administrative est reprenable et exige confirmation et connexion récente ; aucun compte réel supprimé pour la recette. Le propriétaire doit encore valider son facteur TOTP et la recette destructive sur un compte dédié. [État vérifié et limites](ROLLOUT_MVP_20261102.md). Les mentions « non implémenté/non activé » ci-dessous décrivent le runbook initial.
 
 Date : 2026-11-01, Africa/Lagos. Choix utilisateur reçu : **anonymiser les échanges conservés ; supprimer profil, annonces et coordonnées**, à valider avant mise en service. Il s’agit d’une orientation produit, pas d’une autorisation d’effacer un compte réel ni d’une politique juridique de conservation déjà validée.
 

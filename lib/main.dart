@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'features/trust/trust_scope.dart';
+import 'features/push/push_registration.dart';
 import 'features/listings/category_shortcuts.dart';
 
 import 'core/config/supabase_config.dart';
@@ -118,9 +120,11 @@ class _KiboAppState extends State<KiboApp> {
   SafetyRepository? _safetyRepository;
   ListingDraftStore? _draftStore;
   AccountRequestsRepository? _accountRequests;
+  PushRegistration? _push;
 
   @override
   void dispose() {
+    _push?.dispose();
     final chats = _chatRepository;
     if (widget.chatRepository == null && chats is SupabaseChatRepository) {
       chats.dispose();
@@ -159,7 +163,10 @@ class _KiboAppState extends State<KiboApp> {
                           ? Brightness.light
                           : Brightness.dark,
                     ),
-            child: child!,
+            child: TrustScope(
+              clientProvider: () => widget.supabase.client,
+              child: child!,
+            ),
           ),
           home: FutureBuilder<SupabaseStartupResult>(
             future: _startup,
@@ -171,6 +178,7 @@ class _KiboAppState extends State<KiboApp> {
               }
               final result = snapshot.requireData;
               if (result.isReady) {
+                (_push ??= PushRegistration(widget.supabase.client)).start();
                 return ListingPhotoScope(
                   repository: _photoRepository ??=
                       widget.photoRepository ??

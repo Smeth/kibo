@@ -477,7 +477,11 @@ class _SafetyPageState extends State<SafetyPage> {
         ] else if (!_loading)
           const Text('Contenu indisponible.'),
         Text(
-          selected.commentId != null
+          selected.messageId != null
+              ? 'Message signalé'
+              : selected.reportedUserId != null
+              ? 'Profil signalé'
+              : selected.commentId != null
               ? 'Commentaire signalé'
               : 'Annonce signalée',
         ),
@@ -505,19 +509,21 @@ class _SafetyPageState extends State<SafetyPage> {
                   initialValue: _action,
                   isExpanded: true,
                   decoration: const InputDecoration(labelText: 'Décision'),
-                  items: const [
-                    DropdownMenuItem(
+                  items: [
+                    const DropdownMenuItem(
                       value: 'dismiss',
                       child: Text('Rejeter le signalement'),
                     ),
-                    DropdownMenuItem(
+                    const DropdownMenuItem(
                       value: 'resolve',
                       child: Text('Clôturer sans masquer'),
                     ),
-                    DropdownMenuItem(
-                      value: 'hide',
-                      child: Text('Masquer le contenu'),
-                    ),
+                    if (selected.messageId == null &&
+                        selected.reportedUserId == null)
+                      const DropdownMenuItem(
+                        value: 'hide',
+                        child: Text('Masquer le contenu'),
+                      ),
                   ],
                   onChanged: _busy
                       ? null
@@ -580,13 +586,20 @@ class _SafetyPageState extends State<SafetyPage> {
           child: ListTile(
             title: Text(report.reason),
             subtitle: Text(
-              report.commentId != null ? 'Commentaire' : 'Annonce',
+              report.messageId != null
+                  ? 'Message'
+                  : report.reportedUserId != null
+                  ? 'Profil'
+                  : report.commentId != null
+                  ? 'Commentaire'
+                  : 'Annonce',
             ),
             onTap: _busy
                 ? null
                 : () {
                     setState(() {
                       _selected = report;
+                      _action = 'dismiss';
                       _content = null;
                       _history = [];
                       _text.clear();

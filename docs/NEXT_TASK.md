@@ -1,3 +1,20 @@
+## Reprise après mise en place MVP — 2026-11-02
+
+Version 1.0.0+2 installée sur TECNO, processus 8038/premier plan confirmés. **451 tests standard + 451 photos + 34 Deno réussis**, analyse stricte conforme. Recherche V2, gestion de galerie, suppression administrative/expiration 15 jours et protections de confiance réellement déployées. [Bilan vérifié](ROLLOUT_MVP_20261102.md). Push préparé mais désactivé ; **OTP SMS explicitement exclu**. Conserver les lots fictifs visibles comme demandé ; ne pas appliquer `catalogue_fixture_scope.sql` sans nouvel accord.
+
+Prochain lot avec le propriétaire :
+
+1. Profil → Sécurité du compte : enregistrer une application TOTP et confirmer son code sur le téléphone, sans secret dans le chat. Après vérification du facteur, session aal2 obligatoire côté serveur pour l’admin ; contrôler une session non renforcée et une session renforcée. Aucun facteur vérifié au dernier inventaire.
+2. Recette Google et deux appareils/réseau dégradé selon `RECETTE_MVP_DEUX_COMPTES.md`. Un seul TECNO détecté ; aucune série de messages ni annonce réelle créée automatiquement. Toute suppression de compte dédié reste une recette destructive distinctement autorisée.
+3. Créer/configurer Firebase puis activer et recetter les alertes selon `PUSH_NOTIFICATIONS.md`. Aucun compte Firebase existant, aucun envoi ni cron push ; ne pas activer avec les valeurs d’exemple.
+4. Sauvegarder clé et mot de passe de signature dans un coffre externe, choisir le canal pilote et compléter l’identité/exploitation/confidentialité avant diffusion large. Le bundle signé local sans assets fictifs est prêt ; ne pas remplacer la signature debug du TECNO par cette clé. Les fixtures restent dans le catalogue distant par choix de recette.
+
+Les sections suivantes conservent l’historique et leurs anciens statuts de préparation.
+
+## Téléphone installé — 2026-11-02
+
+Version a875592 installée et relancée sur TECNO CK6n Android 14 en mode profile, processus 5801 et premier plan confirmés ; données conservées. Build 95,5 s, installation 5,9 s. Photos actives, fonctionnalités serveur préparées non activées. CI du commit a875592 réussie sur GitHub. Prochain lot inchangé : recherche française, cycle complet des photos publiées, recette deux appareils/réseau dégradé. Avant diffusion : suppression effective, signature/canal Android, confidentialité/support/conservation et séparation des fixtures. Installation réussie ne vaut pas recette métier complète.
+
 ## Consolidation et reprise — 2026-11-02
 
 Le propriétaire a autorisé commit et push sur origin/main. Travail local complet préparé pour conservation, commit distant 2a3b4fb intégré sans conflit. CI enrichie : couverture des assets/outils/contrats serveur, variantes Flutter photos et tests Node du worker. État de référence : [MVP_STATUS.md](MVP_STATUS.md). La présence de propositions SQL et fonctions dans Git ne signifie pas déploiement ; aucune activation distante dans ce lot.

@@ -16,6 +16,18 @@ function request() {
 function check(value: unknown, message: string) {
   if (!value) throw new Error(message);
 }
+Deno.test('admin without server-approved strengthened session cannot delete', async () => {
+  let calls = 0;
+  const response = await handleDeletion(request(), config, async (input) => {
+    calls++;
+    if (String(input).endsWith('/auth/v1/user')) return Response.json({
+      id: actor, app_metadata: { role: 'admin' }, last_sign_in_at: new Date().toISOString(),
+    });
+    if (String(input).endsWith('/kibo_can_moderate')) return Response.json(false);
+    throw new Error('No privileged target access allowed');
+  });
+  check(response.status === 403 && calls === 2, 'MFA/server authorization bypass');
+});
 Deno.test("non-admin and stale admin cannot start deletion", async () => {
   for (
     const user of [{
@@ -51,6 +63,7 @@ Deno.test("storage failure prevents Auth deletion and completion", async () => {
     if (url.includes("/auth/v1/admin/users/")) {
       return Response.json({ id: subject, app_metadata: {} });
     }
+    if (url.endsWith("/kibo_can_moderate")) return Response.json(true);
     if (url.endsWith("/kibo_deletion_begin")) {
       return Response.json({ id: "fixture-job", phase: "frozen" });
     }
@@ -83,6 +96,7 @@ Deno.test("completion requires Auth absence; replay resumes after purge", async 
     config,
     async (input, options) => {
       const url = String(input);
+      if (url.endsWith("/kibo_can_moderate")) return Response.json(true);
       calls.push(url);
       if (url.endsWith("/auth/v1/user")) {
         return Response.json({

@@ -10,10 +10,11 @@ class MessageBubble extends StatelessWidget {
     required this.mine,
     this.onEdit,
     this.onDelete,
+    this.onReport,
   });
   final ChatMessage message;
   final bool mine;
-  final VoidCallback? onEdit, onDelete;
+  final VoidCallback? onEdit, onDelete, onReport;
   Future<void> _showActions(BuildContext context) async {
     final action = await showModalBottomSheet<String>(
       context: context,
@@ -45,6 +46,12 @@ class MessageBubble extends StatelessWidget {
                   title: const Text('Supprimer'),
                   onTap: () => Navigator.pop(context, 'delete'),
                 ),
+              if (onReport != null)
+                ListTile(
+                  leading: const Icon(Icons.flag_outlined),
+                  title: const Text('Signaler'),
+                  onTap: () => Navigator.pop(context, 'report'),
+                ),
               ListTile(
                 leading: const Icon(Icons.copy_outlined),
                 title: const Text('Copier'),
@@ -58,6 +65,7 @@ class MessageBubble extends StatelessWidget {
     if (!context.mounted) return;
     if (action == 'edit') onEdit?.call();
     if (action == 'delete') onDelete?.call();
+    if (action == 'report') onReport?.call();
     if (action == 'copy') {
       await Clipboard.setData(ClipboardData(text: message.content));
     }
@@ -78,7 +86,7 @@ class MessageBubble extends StatelessWidget {
         child: GestureDetector(
           key: ValueKey('message-long-press-${message.id}'),
           behavior: HitTestBehavior.opaque,
-          onLongPress: onEdit != null || onDelete != null
+          onLongPress: onEdit != null || onDelete != null || onReport != null
               ? () => _showActions(context)
               : null,
           child: Container(
@@ -111,14 +119,25 @@ class MessageBubble extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (onEdit != null || onDelete != null)
+                    if (onEdit != null || onDelete != null || onReport != null)
                       PopupMenuButton<String>(
                         key: ValueKey('message-actions-${message.id}'),
                         tooltip: 'Actions du message',
                         icon: const Icon(Icons.more_horiz, size: 20),
-                        onSelected: (value) =>
-                            value == 'edit' ? onEdit?.call() : onDelete?.call(),
+                        onSelected: (value) {
+                          if (value == 'edit') onEdit?.call();
+                          if (value == 'delete') onDelete?.call();
+                          if (value == 'report') onReport?.call();
+                        },
                         itemBuilder: (_) => [
+                          if (onReport != null)
+                            const PopupMenuItem(
+                              value: 'report',
+                              child: ListTile(
+                                leading: Icon(Icons.flag_outlined),
+                                title: Text('Signaler'),
+                              ),
+                            ),
                           if (onEdit != null)
                             const PopupMenuItem(
                               value: 'edit',

@@ -50,6 +50,16 @@ Deno.test("upload valide, isolation vendeur et reprise idempotente", async () =>
   const fetcher: typeof fetch = async (url, options) => {
     const endpoint = String(url);
     if (endpoint.endsWith("/auth/v1/user")) return Response.json({ id: owner });
+    if (endpoint.endsWith("/kibo_photo_transfer_begin")) {
+      assert(new Headers(options?.headers).get("Authorization") === "Bearer fixture-user");
+      assert(JSON.parse(String(options?.body)).p_path === path);
+      return Response.json("fixture-lease");
+    }
+    if (endpoint.endsWith("/kibo_photo_transfer_finish")) {
+      assert(new Headers(options?.headers).get("Authorization") === "Bearer server-fixture");
+      assert(JSON.parse(String(options?.body)).p_ticket === "fixture-lease");
+      return new Response(null, { status: 204 });
+    }
     if (endpoint.includes("/rest/v1/listings?")) {
       return Response.json([{ seller_id: seller, status: "published" }]);
     }
@@ -87,6 +97,14 @@ Deno.test("refus Storage 403/404/500 traduit en 502, puis reprise même chemin",
       const endpoint = String(url);
       if (endpoint.endsWith("/auth/v1/user")) {
         return Response.json({ id: owner });
+      }
+      if (endpoint.endsWith("/kibo_photo_transfer_begin")) {
+        assert(JSON.parse(String(options?.body)).p_path === path);
+        return Response.json("fixture-lease");
+      }
+      if (endpoint.endsWith("/kibo_photo_transfer_finish")) {
+        assert(JSON.parse(String(options?.body)).p_ticket === "fixture-lease");
+        return new Response(null, { status: 204 });
       }
       if (endpoint.includes("/rest/v1/listings?")) {
         return Response.json([{ seller_id: owner, status: "published" }]);

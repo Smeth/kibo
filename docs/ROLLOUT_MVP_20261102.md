@@ -1,0 +1,36 @@
+# Mise en place MVP — 2 novembre 2026
+
+## Autorisations et conservation
+
+Demande : mettre en place les volets recherche/photos, recette, préparation publique et confiance/engagement ; **OTP SMS exclu**. Deux notes locales d’installation préexistantes conservées. Accords précis reçus pour les contrats recherche/media/archives/suppression/expiration, les fonctions correspondantes, le badge du seul compte kanasmeth@gmail.com, les signalements, le contrôle admin/MFA et les pages publiques. Préparation serveur push autorisée séparément, sans envoi ni planification. **Le propriétaire souhaite conserver le catalogue de recette visible** : `catalogue_fixture_scope.sql` reste une proposition testée, non appliquée. Aucun compte ni annonce réel supprimé pour la recette.
+
+## Serveur effectivement déployé
+
+- Recherche V2 : normalisation des accents, préfixes, suggestions, synonymes et fautes bornées, projections soumises à RLS. Contrôle réel avec rôle anon : « tél » et « télé » renvoient une page de 20 annonces ; 5 suggestions et aucun statut masqué dans les résultats contrôlés.
+- Galerie : contrat atomique, tickets de transfert, révisions et reprises ; uploader v2 et fonction de gestion actifs. Revue du vrai schéma : la contrainte historique liait le chemin au rang et empêchait les nouveaux chemins. Delta `media_path_constraints.sql` appliqué après reproduction locale et vérification des 1 200 chemins existants (aucune exception). Les chemins restent liés au propriétaire, à l’annonce et au hash ; leur identité reste stable après réordonnancement.
+- Suppression : archives privées, gel, purge reprenable, expiration après 15 jours et tâche horaire active. Fonction v2 contrôlant le rôle et la permission admin de la session avant toute opération privilégiée. **Aucune suppression réelle exécutée.** La recette destructive d’un compte dédié reste distincte.
+- Confiance : signalements messages/profils réservés aux utilisateurs concernés, doublons et limite de 10/heure, examen motivé et journal. Les messages privés ne deviennent pas consultables par un tiers ; la modération peut les lire pour traiter un signalement. Aucun masquage automatique de profil/message ajouté ; clôture motivée et recours support. Badge par table serveur sans écriture client, attribué au seul compte officiel autorisé.
+- Admin : rôle vérifié aussi dans Auth, ce qui neutralise un rôle révoqué malgré un ancien JWT. Dès qu’un facteur MFA est vérifié, session aal2 requise ; le propriétaire doit encore enregistrer son application TOTP et confirmer son premier code. Aucun secret TOTP généré ou communiqué dans le chat.
+- Push : contrat privé et fonction d’envoi déployés, **désactivés sans Firebase**, aucun envoi ni cron d’envoi. Voir [activation](PUSH_NOTIFICATIONS.md).
+
+Les migrations ont été appliquées individuellement via le connecteur, sans reset ni db push global. Les sources sont conservées dans `supabase/proposals/`, les fonctions dans `supabase/functions/`. Leur présence ne remplace pas une reconstruction complète du backend sur projet vierge, encore à prouver.
+
+Journal des onze migrations réellement appliquées : [versions et sources](../supabase/deployments/20261102_rollout.json). Un contrôle HTTP a détecté un refus visiteur 401/42501 après passage du garde en invoker : le vrai rôle anon n’a pas USAGE sur private, contrairement à la fixture initiale. Le rétablissement public SECURITY DEFINER a été refusé par l’approbation automatique et n’a pas été appliqué. Correction retenue : retour immédiat pour un visiteur sans compte, puis contrôle privé inchangé pour les comptes connectés. Le garde reste invoker, sans nouveau privilège ; la fixture révoque désormais USAGE private avant son contrôle visiteur et vérifie aussi le message de refus d’un compte gelé. Contrôle HTTP final avec clé publique locale : **200, 20 résultats publiés pour « tél » et pour « télé »**. Aucune clé affichée. Le conseiller ne signale plus de fonction publique SECURITY DEFINER exposée.
+
+## Client et diffusion
+
+Profil : aide et confidentialité avec kanasmeth@gmail.com, sécurité TOTP sans SMS, état des notifications Android. Badge sur le profil vendeur et signalement d’un profil ou d’un message reçu. Le badge reste masqué en cas d’échec du serveur ou pendant la vérification d’un autre profil.
+
+Pages publiques créées et publiées avec le skill Sites : **https://kibo-assistance-2026.stonytern8.chatgpt.site** (aide, confidentialité, règles, suppression). Projet Sites `appgprj_6ae8ce23f5348191858179777e67fb2b`, source dédiée synchronisée séparément du dépôt Flutter, commit `bf13fa628e12675ac4ff9d3889f335dd45508820`. Site sans formulaire ni traceur ajouté. Publication native confirmée ; navigateur de QA indisponible dans cette session, inspection visuelle navigateur non revendiquée.
+
+Version Android 1.0.0+2. Nouvelle clé locale RSA 3072 créée et vérifiée, `android/key.properties` et `android/keystores/` ignorés et protégés par ACL Windows. Mot de passe aléatoire non affiché, copie DPAPI liée au compte Windows. **Ce n’est pas une sauvegarde externe** : conserver clé et mot de passe dans un coffre externe avant publication. Aucun upload Play Store. Ne pas remplacer la signature debug du TECNO par cette nouvelle signature.
+
+`Build-AndroidPilot.ps1` construit dans une copie isolée, exclut les assets fictifs du bundle et vérifie présence de signature et absence de fixtures. `Prepare-AndroidSigning.ps1` refuse tout écrasement et permet une reprise protégée après interruption. Les avertissements stderr Java ne sont plus assimilés à un échec par les lanceurs PowerShell.
+
+## Vérifications et limites
+
+Tests SQL réels sur clusters PostgreSQL 13 jetables : recherche/media, ajout/retrait/reprise, réordonnancement d’anciens chemins sous la vraie contrainte, gel/purge/conservation, isolation des signalements et du badge, tokens/file push, MFA et révocation du rôle. Clusters arrêtés ; aucune fixture appliquée au serveur distant. Tests Edge : transports Auth/REST/Storage/FCM simulés, pas d’envoi réel. Résultats finaux Flutter, artefact et installation consignés dans PROGRESS.
+
+Conseiller sécurité après les changements : RLS active sur toutes les tables public ; tables privées sans policy volontairement fermées aux clients. Avertissement restant : protection des mots de passe compromis désactivée dans Auth ; réglage non modifié, dépendant de la configuration/du plan Supabase. [Explication officielle](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+À achever avec accès/participation nécessaires : création/configuration Firebase et recette push ; sauvegarde externe de signature et choix du canal pilote ; activation humaine TOTP ; recette Google et deux appareils (un seul TECNO détecté), avec coupures réseau et reprise ; recette destructive autorisée d’un compte dédié. Le catalogue fictif reste public par choix explicite pour la recette, donc ce serveur reste un environnement de pilote. L’identité juridique de l’exploitant, la conservation des journaux/sauvegardes, le support opérationnel et les exigences de publication doivent être finalisés avant diffusion large. Aucun paiement/livraison/abonnement/sponsorisation ajouté.

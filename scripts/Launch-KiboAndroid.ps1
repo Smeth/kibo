@@ -1,4 +1,4 @@
-param([string]$DeviceId, [switch]$EnablePhoneAuth, [switch]$ProfileMode, [switch]$EnableDiscoveryV2, [switch]$EnableMediaManagement, [switch]$EnableAccountDeletion)
+param([string]$DeviceId, [switch]$EnablePhoneAuth, [switch]$ProfileMode, [switch]$EnableDiscoveryV2 = $true, [switch]$EnableMediaManagement = $true, [switch]$EnableAccountDeletion = $true, [switch]$EnablePush)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Set-Location -LiteralPath $repoRoot
@@ -19,6 +19,11 @@ if ($DeviceId -notin $devices) { throw 'Telephone cible absent ou debogage non a
 New-Item -ItemType Directory -Path (Join-Path $repoRoot '.dart_tool') -Force | Out-Null
 $logPath = Join-Path $repoRoot '.dart_tool\kibo-android-launch.log'
 $previousDebug = $env:DEBUG
+$pushArgs = @()
+if ($EnablePush) {
+    if (-not (Test-Path -LiteralPath 'config/firebase.local.json')) { throw 'Configuration publique Firebase locale manquante. Aucun build lance.' }
+    $pushArgs = @('--dart-define-from-file=config/firebase.local.json','--dart-define=KIBO_PUSH_ENABLED=true')
+}
 try {
     # DEBUG can make gradlew echo compile parameters. Never expose its raw log.
     $env:DEBUG = ''
@@ -27,8 +32,13 @@ try {
     $mediaFlag = if ($EnableMediaManagement) { 'true' } else { 'false' }
     $deletionFlag = if ($EnableAccountDeletion) { 'true' } else { 'false' }
     $buildMode = if ($ProfileMode) { '--profile' } else { '--debug' }
-    & $dart $flutter run -d $DeviceId $buildMode --no-resident --no-pub --dart-define-from-file=config/supabase.public.json --dart-define-from-file=config/supabase.local.json --dart-define=KIBO_LISTING_PHOTOS_ENABLED=true "--dart-define=KIBO_PHONE_AUTH_ENABLED=$phoneAuthFlag" "--dart-define=KIBO_DISCOVERY_V2_ENABLED=$discoveryFlag" "--dart-define=KIBO_MEDIA_MANAGEMENT_ENABLED=$mediaFlag" "--dart-define=KIBO_ACCOUNT_DELETION_ENABLED=$deletionFlag" > $logPath 2>&1
-    if ($LASTEXITCODE -ne 0) { throw 'Lancement KIBO echoue. Journal local ignore disponible ; ne pas le partager sans expurgation.' }
+    $beforePreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        & $dart $flutter run -d $DeviceId $buildMode --no-resident --no-pub --dart-define-from-file=config/supabase.public.json --dart-define-from-file=config/supabase.local.json --dart-define=KIBO_LISTING_PHOTOS_ENABLED=true "--dart-define=KIBO_PHONE_AUTH_ENABLED=$phoneAuthFlag" "--dart-define=KIBO_DISCOVERY_V2_ENABLED=$discoveryFlag" "--dart-define=KIBO_MEDIA_MANAGEMENT_ENABLED=$mediaFlag" "--dart-define=KIBO_ACCOUNT_DELETION_ENABLED=$deletionFlag" @pushArgs > $logPath 2>&1
+        $runExit = $LASTEXITCODE
+    } finally { $ErrorActionPreference = $beforePreference }
+    if ($runExit -ne 0) { throw 'Lancement KIBO echoue. Journal local ignore disponible ; ne pas le partager sans expurgation.' }
     Select-String -LiteralPath $logPath -Pattern '^Running Gradle|^Installing |^Syncing ' | ForEach-Object { $_.Line }
     $appPid = & $adb -s $DeviceId shell pidof com.kibo.kibo
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($appPid -join ''))) { throw 'Commande Flutter terminee mais processus KIBO non confirme.' }

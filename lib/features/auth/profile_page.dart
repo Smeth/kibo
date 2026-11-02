@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../trust/help_page.dart';
+import '../trust/security_page.dart';
+import '../trust/trust_scope.dart';
+import '../push/push_settings_page.dart';
 
 import 'auth_controller.dart';
 import 'auth_page.dart';
@@ -47,6 +51,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             AuthPage(controller: auth, embedded: true),
+            const _HelpEntry(),
           ],
         ),
       );
@@ -190,13 +195,46 @@ class ProfilePage extends StatelessWidget {
               onPressed: auth.busy ? null : auth.signOut,
               child: Text(auth.busy ? 'Veuillez patienter…' : 'Se déconnecter'),
             ),
+            if (TrustScope.maybeClient(context) case final client?) ...[
+              KiboMenuAction(
+                icon: Icons.security_outlined,
+                label: 'Sécurité du compte',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SecurityPage(client: client),
+                  ),
+                ),
+              ),
+              KiboMenuAction(
+                icon: Icons.notifications_active_outlined,
+                label: 'Notifications sur ce téléphone',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => PushSettingsPage(client: client),
+                  ),
+                ),
+              ),
+            ],
           ],
           if (auth?.message != null) ...[
             const SizedBox(height: 16),
             Semantics(liveRegion: true, child: Text(auth!.message!)),
           ],
+          const _HelpEntry(),
         ],
       ),
     );
   }
+}
+
+class _HelpEntry extends StatelessWidget {
+  const _HelpEntry();
+  @override
+  Widget build(BuildContext context) => KiboMenuAction(
+    icon: Icons.help_outline,
+    label: 'Aide et confidentialité',
+    onTap: () => Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const HelpPage())),
+  );
 }

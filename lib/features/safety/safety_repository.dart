@@ -30,9 +30,12 @@ class ContentReport {
     this.details,
     this.listingId,
     this.commentId,
+    this.messageId,
+    this.reportedUserId,
   });
   final String id, reason, status;
   final String? details, listingId, commentId;
+  final String? messageId, reportedUserId;
   factory ContentReport.fromJson(Map<String, dynamic> row) => ContentReport(
     id: row['id'] as String,
     reason: row['reason'] as String,
@@ -40,6 +43,8 @@ class ContentReport {
     details: row['details'] as String?,
     listingId: row['listing_id'] as String?,
     commentId: row['comment_id'] as String?,
+    messageId: row['message_id'] as String?,
+    reportedUserId: row['reported_user_id'] as String?,
   );
 }
 
@@ -224,7 +229,9 @@ class SupabaseSafetyRepository implements SafetyRepository {
     await _admin(owner, check);
     final rows = await client
         .from('reports')
-        .select('id,listing_id,comment_id,reason,details,status')
+        .select(
+          'id,listing_id,comment_id,message_id,reported_user_id,reason,details,status',
+        )
         .eq('status', status)
         .order('created_at', ascending: false)
         .order('id')

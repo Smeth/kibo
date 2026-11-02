@@ -57,3 +57,8 @@ app.*.map.json
 
 # Supabase CLI cache (no remote project credentials in Git)
 /supabase/.temp/
+/android/keystores/
+# Server credentials are entered locally, never committed.
+/config/firebase-service-account*.json
+# Dedicated Sites source repository, synchronized separately by the Sites workflow.
+/sites/kibo-help/
