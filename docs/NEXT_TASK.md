@@ -1,5 +1,7 @@
 ## Reprise après mise en place MVP — 2026-11-02
 
+Code applicatif conservé et poussé : `385ad5f`. Pages publiques avec licence Manrope publiées, copie source dans `web/help/`. Aucun fichier de signature ni configuration locale suivi par Git.
+
 Version 1.0.0+2 installée sur TECNO, processus 8038/premier plan confirmés. **451 tests standard + 451 photos + 34 Deno réussis**, analyse stricte conforme. Recherche V2, gestion de galerie, suppression administrative/expiration 15 jours et protections de confiance réellement déployées. [Bilan vérifié](ROLLOUT_MVP_20261102.md). Push préparé mais désactivé ; **OTP SMS explicitement exclu**. Conserver les lots fictifs visibles comme demandé ; ne pas appliquer `catalogue_fixture_scope.sql` sans nouvel accord.
 
 Prochain lot avec le propriétaire :
